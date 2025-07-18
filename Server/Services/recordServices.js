@@ -22,6 +22,9 @@ const createRecordService = async (recordData) => {
     }
     else if(recordData.status === 'returned') {
       book.available += recordData.quantity;
+      if (book.available > book.quantity) {
+        book.available = book.quantity; // Ensure available does not exceed total quantity
+      } 
     }
     await book.save();
     const newRecord = new Record(recordData);

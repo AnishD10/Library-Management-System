@@ -1,13 +1,53 @@
 const Borrower = require('../Models/Borrower');
+const crypto = require('crypto'); // For generating random passwords
+const bcrypt = require('bcryptjs');
+const user = require('../Models/User');
+const sendLoginDetails = require('../Utils/Mailer'); // Assuming you have a mailer utility
+// to send emails
+
+
 
 // Create a new borrower
-const createBorrowerService = async (borrowerData) => {
+const createBorrowerService = async (newUserData) => {
+  let newBorrower;
+  let password = crypto.randomBytes(8).toString('hex'); // Generate a random password
+
   try {
-    const newBorrower = new Borrower(borrowerData);
+    // Step 1: Create the librarian
+    newBorrower = new Borrower(newUserData);
     await newBorrower.save();
-    return { message: 'Borrower created successfully', borrower: newBorrower };
-  } catch (error) {
-    throw new Error('Error creating borrower: ' + error.message);
+
+    // Step 2: Create the user for the librarian
+    let newUser = new user({
+      email: newUserData.email,
+      password, // Use the plain text password
+      role: 'borrower',
+    });
+    console.log(password)
+    // Hash the password before saving
+    newUser.password = await bcrypt.hash(password, 10);
+
+    // Save the user
+    await newUser.save();
+
+    // Step 3: Send login details to the librarian's email
+    await sendLoginDetails(
+      newUser.email,
+      'Borrower Account Created',
+      `Your account has been created. Email: ${newUser.email}, Password: ${password}`
+    );
+
+    return { message: 'Success', borrower: newBorrower, user: newUser };
+  } catch (err) {
+    // Rollback borrower creation if user creation fails
+    if (newBorrower) {
+      try {
+        await Borrower.deleteOne({ _id: newBorrower._id });
+      } catch (rollbackErr) {
+        console.error('Error rolling back borrower creation:', rollbackErr.message);
+      }
+    }
+    throw new Error(`Error creating borrower or user: ${err.message}`);
   }
 };
 

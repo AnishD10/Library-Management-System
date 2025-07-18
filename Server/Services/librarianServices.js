@@ -49,14 +49,7 @@ const createLibrarianService = async (newUserData) => {
   }
 };
 
-// Find a librarian by email
-const findUserByEmail = async (email) => {
-  try {
-    return await user.findOne({ email });
-  } catch (err) {
-    throw new Error('Error finding user by email: ' + err.message);
-  }
-};
+
 
 // Get all librarians
 const getAllLibrarians = async () => {
@@ -112,7 +105,6 @@ const deleteLibrarianById = async (id) => {
 
 module.exports = {
   createLibrarianService,
-  findUserByEmail,
   getAllLibrarians,
   getLibrarianById,
   updateLibrarianById,

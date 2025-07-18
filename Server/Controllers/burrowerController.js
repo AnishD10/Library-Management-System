@@ -1,18 +1,40 @@
 const borrowerService = require('../Services/burrowerServices');
+const EmailFinder = require('../Utils/EmailFinder')
+
 
 // Create a new borrower
 const createBorrower = async (req, res) => {
   const { name, email, phone, address } = req.body;
 
+  // Validate required fields
   if (!name || !email || !phone || !address) {
     return res.status(400).json({ message: 'All fields are required' });
   }
 
+  // Validate email format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ message: 'Invalid email format' });
+  }
+
+  // Validate phone number (example: must be 10 digits)
+  const phoneRegex = /^\d{10}$/;
+  if (!phoneRegex.test(phone)) {
+    return res.status(400).json({ message: 'Invalid phone number format. Must be 10 digits.' });
+  }
+
+  // Check if email already exists
+  const emailExists = await EmailFinder.findUserByEmail(email);
+  if (emailExists) {
+    return res.status(400).json({ message: 'Email already exists' });
+  }
+
   try {
+    // Call the service to create the burrower
     const result = await borrowerService.createBorrowerService(req.body);
     return res.status(201).json(result);
   } catch (error) {
-    return res.status(500).json({ message: 'Error creating borrower', error: error.message });
+    return res.status(500).json({ message: 'Error creating burrower', error: error.message });
   }
 };
 

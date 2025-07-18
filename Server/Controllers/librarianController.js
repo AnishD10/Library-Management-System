@@ -1,4 +1,5 @@
 const librarianService = require('../Services/librarianServices');
+const emailFinder = require('../Utils/EmailFinder');
 
 // Create a new librarian
 const createLibrarian = async (req, res) => {
@@ -22,7 +23,7 @@ const createLibrarian = async (req, res) => {
   }
 
   // Check if email already exists
-  const emailExists = await librarianService.findUserByEmail(email);
+  const emailExists = await emailFinder.findUserByEmail(email);
   if (emailExists) {
     return res.status(400).json({ message: 'Email already exists' });
   }
