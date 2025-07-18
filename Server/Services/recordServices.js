@@ -9,14 +9,21 @@ const createRecordService = async (recordData) => {
       throw new Error('Book not found');
     }
 
-    if (book.quantity < recordData.quantity) {
+    if (book.available < recordData.quantity) {
       throw new Error('Not enough books available');
     }
 
-    // Deduct the quantity of books
-    book.quantity -= recordData.quantity;
-    await book.save();
+   
 
+    // Deduct the quantity of books
+    if (recordData.status === 'issued') {
+      book.available -= recordData.quantity;
+    
+    }
+    else if(recordData.status === 'returned') {
+      book.available += recordData.quantity;
+    }
+    await book.save();
     const newRecord = new Record(recordData);
     await newRecord.save();
     return { message: 'Record created successfully', record: newRecord };
