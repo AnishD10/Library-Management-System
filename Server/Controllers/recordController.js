@@ -2,9 +2,9 @@ const recordService = require('../Services/recordServices');
 
 // Create a new record
 const createRecord = async (req, res) => {
-  const { bookId, borrowerId, librarianId, returnDate, quantity } = req.body;
+  const { bookId, borrowerId, librarianId, status} = req.body;
 
-  if (!bookId || !borrowerId || !librarianId || !returnDate || !quantity) {
+  if (!bookId || !borrowerId || !librarianId || !status) {
     return res.status(400).json({ message: 'All fields are required' });
   }
 
@@ -12,7 +12,7 @@ const createRecord = async (req, res) => {
     const result = await recordService.createRecordService(req.body);
     return res.status(201).json(result);
   } catch (error) {
-    return res.status(500).json({ message: 'Error creating record', error: error.message });
+    return res.status(500).json({ message: 'Error creating record 1', error: error.message });
   }
 };
 

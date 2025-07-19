@@ -1,5 +1,6 @@
 const Record = require('../Models/Records');
 const Book = require('../Models/Book');
+const Borrower = require('../Models/Borrower');
 
 // Create a new record
 const createRecordService = async (recordData) => {
@@ -12,16 +13,28 @@ const createRecordService = async (recordData) => {
     if (book.available < recordData.quantity) {
       throw new Error('Not enough books available');
     }
-
-   
+    const borrower = await Borrower.findById(recordData.borrowerId);
+    if (!borrower) {
+      throw new Error('Borrower not found');
+    }
 
     // Deduct the quantity of books
     if (recordData.status === 'issued') {
-      book.available -= recordData.quantity;
+      if (borrower.booksBorrowed.includes(recordData.bookId)) {
+        throw new Error('Book already borrowed by this borrower');
+      }
+      borrower.booksBorrowed.push(recordData.bookId);
+      await borrower.save();
+      book.available -= 1;
     
     }
     else if(recordData.status === 'returned') {
-      book.available += recordData.quantity;
+      if (!borrower.booksBorrowed.includes(recordData.bookId)) {
+        throw new Error('Book was not borrowed by this borrower or returned already');
+      }
+      borrower.booksBorrowed.pull(recordData.bookId);
+      await borrower.save();
+      book.available += 1;
       if (book.available > book.quantity) {
         book.available = book.quantity; // Ensure available does not exceed total quantity
       } 
