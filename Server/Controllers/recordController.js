@@ -12,7 +12,7 @@ const createRecord = async (req, res) => {
     const result = await recordService.createRecordService(req.body);
     return res.status(201).json(result);
   } catch (error) {
-    return res.status(500).json({ message: 'Error creating record 1', error: error.message });
+    return res.status(500).json({ message: 'Error creating record ', error: error.message });
   }
 };
 

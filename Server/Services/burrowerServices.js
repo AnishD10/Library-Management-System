@@ -54,7 +54,7 @@ const createBorrowerService = async (newUserData) => {
 // Get all borrowers
 const getAllBorrowersService = async () => {
   try {
-    return await Borrower.find();
+    return await Borrower.find().populate('booksBorrowed');
   } catch (error) {
     throw new Error('Error fetching borrowers: ' + error.message);
   }
