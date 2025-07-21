@@ -1,6 +1,10 @@
 const Record = require('../Models/Records');
 const Book = require('../Models/Book');
 const Borrower = require('../Models/Borrower');
+const cron = require('node-cron');
+
+
+
 
 // Create a new record
 const createRecordService = async (recordData) => {
@@ -24,8 +28,13 @@ const createRecordService = async (recordData) => {
         throw new Error('Book already borrowed by this borrower');
       }
       borrower.booksBorrowed.push(recordData.bookId);
-      await borrower.save();
+
+      await borrower.save(); // Save borrower changes
       book.available -= 1;
+
+      if (book.available < 0) {
+        book.available = 0; // Ensure available does not go below zero
+      }
     
     }
     else if(recordData.status === 'returned') {
