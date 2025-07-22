@@ -1,20 +1,21 @@
 const express = require('express');
 const router = express.Router();
 const recordController = require('../Controllers/recordController');
+const roleAccess = require('../Middlewaeres/role');  // Import role middleware
 
 // Create a new record
-router.post('/', recordController.createRecord);
+router.post('/',roleAccess('librarian') , recordController.createRecord);
 
 // Get all records
-router.get('/', recordController.getAllRecords);
+router.get('/', roleAccess('librarian'), recordController.getAllRecords);
 
 // Get a record by ID
-router.get('/:id', recordController.getRecordById);
+router.get('/:id', roleAccess('librarian'), recordController.getRecordById);
 
 // Update a record by ID
-router.put('/:id', recordController.updateRecordById);
+router.put('/:id', roleAccess('librarian'), recordController.updateRecordById);
 
 // Delete a record by ID
-router.delete('/:id', recordController.deleteRecordById);
+router.delete('/:id', roleAccess('librarian'), recordController.deleteRecordById);
 
 module.exports = router;

@@ -1,20 +1,22 @@
 const express = require('express');
 const router = express.Router();
 const bookController = require('../Controllers/bookController');
+const roleAccess = require('../Middlewaeres/role'); 
+
 
 // Create a new book
-router.post('/', bookController.createBook);
+router.post('/', roleAccess('librarian'), bookController.createBook);
 
 // Get all books
-router.get('/', bookController.getAllBooks);
+router.get('/', roleAccess('librarian'), bookController.getAllBooks);
 
 // Get a book by ID
-router.get('/:id', bookController.getBookById);
+router.get('/:id', roleAccess('librarian'), bookController.getBookById);
 
 // Update a book by ID
-router.put('/:id', bookController.updateBookById);
+router.put('/:id', roleAccess('librarian'), bookController.updateBookById);
 
 // Delete a book by ID
-router.delete('/:id', bookController.deleteBookById);
+router.delete('/:id', roleAccess('librarian'), bookController.deleteBookById);
 
 module.exports = router;

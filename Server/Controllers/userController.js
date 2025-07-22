@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { generateOtp, findUserByOtp, clearOtpFields } = require("../Utils/otpUtils");
 const nodemailer = require('nodemailer');
+const EmailFinder = require('../Utils/EmailFinder');
 
 // Nodemailer transporter setup
 const transporter = nodemailer.createTransport({
@@ -28,8 +29,8 @@ const loginUser = async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.status(200).json({ message: 'Login successful', token });
+    const token = jwt.sign({ id: user._id , role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    res.status(200).json({ message: 'Login successful', token , role : user.role});
   } catch (error) {
     res.status(500).json({ message: 'Internal Server Error', error: error.message });
   }
@@ -84,7 +85,12 @@ const createUser = async (req, res) => {
 
   if (!name || !email || !password || !role) {
     return res.status(400).json({ message: 'All fields are required' });
+
   }
+    const emailExists = await EmailFinder.findUserByEmail(email);
+    if (emailExists) {
+      return res.status(400).json({ message: 'Email already exists' });
+    }
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);

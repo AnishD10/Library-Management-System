@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const app = express();
+const authorize = require('./Middlewaeres/auth');  // Import auth middleware
 const PORT = process.env.PORT || 3000;
 
 // Enable CORS with specified origin
@@ -34,11 +35,11 @@ const userRoute = require('./Routes/userRoutes'); // Assuming you have a user ro
 const recordRoute = require('./Routes/recordRoutes'); // Assuming you have a record route
 
 // Use routes
-app.use('/api/librarians', librarianRoute);
-app.use('/api/borrowers', borrowerRoute);
-app.use('/api/books', bookRoute);
+app.use('/api/librarians',authorize, librarianRoute);
+app.use('/api/borrowers',authorize, borrowerRoute);
+app.use('/api/books',authorize, bookRoute);
 app.use('/api/users', userRoute);
-app.use('/api/records', recordRoute);
+app.use('/api/records',authorize, recordRoute);
 
 // Default route for health check
 app.get('/', (req, res) => {
