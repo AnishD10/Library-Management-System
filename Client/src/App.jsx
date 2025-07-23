@@ -1,34 +1,35 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+
+
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div>
+      <h1>Library Management System</h1>
+      <div className='main-panel'>
+      <div className='login'>
+      <h2>Login Borrower</h2>
+      <form>
+        <label htmlFor="username">Username:</label>
+        <input type="text" id="username" name="username" required />
+        
+        <label htmlFor="password">Password:</label>
+        <input type="password" id="password" name="password" required />
+        
+        <button type="submit">Login</button>
+      </form>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
+      <div className='dashboard'>
+      <h2>Borrower Dashboard</h2>
+      <p className='book'>Book Title: 1984</p>
+      <p className='author'>Author: George Orwell</p>
+      <p className='available'>Available : 3</p>
+
+      <button>Borrow</button>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+      </div>
+    </div>
   )
 }
 
