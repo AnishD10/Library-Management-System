@@ -1,8 +1,40 @@
 
-
+import React, { useState } from 'react'
 import './App.css'
+import axios from 'axios';
+
 
 function App() {
+
+  const [message, setMessage] = useState('');
+  const [form , setForm] = useState({
+    email: '',
+    password: ''
+  });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm({
+      ...form,
+      [name]: value
+    });
+  }
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post('http://localhost:3000/api/users/login', form, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }); 
+
+      setMessage(res.data.message);
+    } catch (error) {
+      setMessage(error.res.message);
+    }
+
+  }
+  
 
   return (
     <div>
@@ -10,14 +42,15 @@ function App() {
       <div className='main-panel'>
       <div className='login'>
       <h2>Login Borrower</h2>
-      <form>
-        <label htmlFor="username">Username:</label>
-        <input type="text" id="username" name="username" required />
-        
+      <form onSubmit={handleLogin}>
+        <label htmlFor="email">Email:</label>
+        <input type="text" id="email" name="email" onChange={handleChange} required />
+
         <label htmlFor="password">Password:</label>
-        <input type="password" id="password" name="password" required />
-        
+        <input type="password" id="password" name="password" onChange={handleChange} required />
+
         <button type="submit">Login</button>
+        {message && <p className='message'>{message}</p>}
       </form>
       </div>
       <div className='dashboard'>
@@ -26,7 +59,7 @@ function App() {
       <p className='author'>Author: George Orwell</p>
       <p className='available'>Available : 3</p>
 
-      <button>Borrow</button>
+      <button type='submit'>Borrow</button>
       </div>
       </div>
     </div>
