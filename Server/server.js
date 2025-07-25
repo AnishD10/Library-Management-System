@@ -37,7 +37,7 @@ const recordRoute = require('./Routes/recordRoutes'); // Assuming you have a rec
 // Use routes
 app.use('/api/librarians',authorize, librarianRoute);
 app.use('/api/borrowers',authorize, borrowerRoute);
-app.use('/api/books',authorize, bookRoute);
+app.use('/api/books', bookRoute);
 app.use('/api/users', userRoute);
 app.use('/api/records', recordRoute);
 
