@@ -4,7 +4,7 @@ const librarianController = require('../Controllers/librarianController');
 const roleAccess = require('../Middlewaeres/role'); 
 
 // Create a new librarian
-router.post('/', roleAccess('librarian'), librarianController.createLibrarian);
+router.post('/', librarianController.createLibrarian);
 
 // Get all librarians
 router.get('/', roleAccess('librarian'), librarianController.getAllLibrarians);

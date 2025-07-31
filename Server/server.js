@@ -32,8 +32,8 @@ const userRoute = require('./Routes/userRoutes'); // Assuming you have a user ro
 const recordRoute = require('./Routes/recordRoutes'); // Assuming you have a record route
 
 // Use routes
-app.use('/api/librarians',authorize, librarianRoute);
-app.use('/api/borrowers',authorize, borrowerRoute);
+app.use('/api/librarians', librarianRoute);
+app.use('/api/borrowers', authorize, borrowerRoute);
 app.use('/api/books', bookRoute);
 app.use('/api/users', userRoute);
 app.use('/api/records', recordRoute);

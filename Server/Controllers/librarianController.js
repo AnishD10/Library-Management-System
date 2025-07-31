@@ -4,6 +4,7 @@ const emailFinder = require('../Utils/EmailFinder');
 // Create a new librarian
 const createLibrarian = async (req, res) => {
   const { name, email, phone, address } = req.body;
+ 
 
   // Validate required fields
   if (!name || !email || !phone || !address) {
