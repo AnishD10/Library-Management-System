@@ -10,7 +10,8 @@ router.post('/login', userController.loginUser);
 router.post('/forgotPassword', userController.forgotPassword);
 router.put('/resetPassword', userController.resetPassword);
 
-router.post('/register', authorize, roleAccess('librarian') ,  userController.createUser);
+router.post('/register' ,  userController.createUser);
+router.post('/verify-otp', userController.verifyOtp); // Route for OTP verification
 
 
 

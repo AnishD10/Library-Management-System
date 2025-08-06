@@ -62,13 +62,18 @@ const forgotPassword = async (req, res) => {
 // Reset password
 const resetPassword = async (req, res) => {
   try {
-    const { otp, newPassword } = req.body;
-    if (!otp || !newPassword) {
-      return res.status(400).send({ message: "OTP and new password are required" });
+    const { newPassword , confirmPassword } = req.body;
+    if (!confirmPassword|| !newPassword) {
+      return res.status(400).send({ message: "Please , fill out all the fields" });
     }
 
-    const user = await findUserByOtp(otp);
-    if (!user) return res.status(400).send({ message: "Invalid or expired OTP" });
+    if (newPassword !== confirmPassword) {
+      return res.status(400).send({ message: "Passwords do not match" });
+    }
+    const user = await findUserByOtp(req.body.otp);
+    if (!user) {
+      return res.status(400).send({ message: "Invalid or expired OTP" });
+    }
 
     user.password = await bcrypt.hash(newPassword, 10);
     await clearOtpFields(user);
@@ -79,11 +84,33 @@ const resetPassword = async (req, res) => {
   }
 };
 
+const verifyOtp = async (req, res) => {
+  const { email, otp } = req.body;
+  if (!email || !otp) {
+    return res.status(400).json({ message: 'Email and OTP are required' });
+  }
+  try {
+    const user = await User.findOne({ email, otp, otpExpiry: { $gt: Date.now() } });
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired OTP' });
+    }
+
+    // Clear OTP fields after successful verification
+    user.otp = undefined;
+    user.otpExpiry = undefined;
+    await user.save();
+
+    res.status(200).json({ message: 'OTP verified successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Internal Server Error', error: error.message });
+  }
+}
+
 // Create a new user
 const createUser = async (req, res) => {
-  const { name, email, password, role } = req.body;
+  const { name, email, password} = req.body;
 
-  if (!name || !email || !password || !role) {
+  if (!name || !email || !password ) {
     return res.status(400).json({ message: 'All fields are required' });
 
   }
@@ -94,7 +121,7 @@ const createUser = async (req, res) => {
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ name, email, password: hashedPassword, role });
+    const newUser = new User({ name, email, password: hashedPassword});
     await newUser.save();
     res.status(201).json({ message: 'User created successfully', user: newUser });
   } catch (error) {
@@ -183,4 +210,5 @@ module.exports = {
   getUserById,
   updateUserById,
   deleteUserById,
+  verifyOtp
 };
