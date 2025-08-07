@@ -62,15 +62,9 @@ const forgotPassword = async (req, res) => {
 // Reset password
 const resetPassword = async (req, res) => {
   try {
-    const { newPassword , confirmPassword } = req.body;
-    if (!confirmPassword|| !newPassword) {
-      return res.status(400).send({ message: "Please , fill out all the fields" });
-    }
+    const { newPassword , otp } = req.body;
 
-    if (newPassword !== confirmPassword) {
-      return res.status(400).send({ message: "Passwords do not match" });
-    }
-    const user = await findUserByOtp(req.body.otp);
+    const user = await findUserByOtp(otp);
     if (!user) {
       return res.status(400).send({ message: "Invalid or expired OTP" });
     }
@@ -95,10 +89,6 @@ const verifyOtp = async (req, res) => {
       return res.status(400).json({ message: 'Invalid or expired OTP' });
     }
 
-    // Clear OTP fields after successful verification
-    user.otp = undefined;
-    user.otpExpiry = undefined;
-    await user.save();
 
     res.status(200).json({ message: 'OTP verified successfully' });
   } catch (error) {

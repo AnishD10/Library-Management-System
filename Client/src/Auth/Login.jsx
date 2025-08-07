@@ -102,10 +102,10 @@ const Login = () => {
             return;
         }
 
-        axios.post('http://localhost:3000/api/users/resetPassword', { 
+        axios.put('http://localhost:3000/api/users/resetPassword', { 
     
             newPassword: newPassword, 
-            confirmPassword: confirmPassword
+            otp: otp
         })
         .then(response => {
             setMessage('Password reset successful! You can now login with your new password.');
