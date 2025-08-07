@@ -4,7 +4,7 @@ const borrowerController = require('../Controllers/burrowerController');
 const roleAccess = require('../Middlewaeres/role'); 
 
 // Create a new borrower
-router.post('/', roleAccess('librarian'), borrowerController.createBorrower);
+router.post('/', borrowerController.createBorrower);
 
 // Get all borrowers
 router.get('/', roleAccess('librarian'), borrowerController.getAllBorrowers);
