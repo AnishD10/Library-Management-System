@@ -1,112 +1,136 @@
-require('dotenv').config();
+// 🤓 Welcome to the Librarian Academy!
+// Where book guardians are born and "SHHH!" becomes a superpower! 🤫
+require('dotenv').config(); // 🔐 Loading our secret environment variables (top secret stuff!)
 const librarian = require('../Models/Librarian');
 const user = require('../Models/User');
-const bcrypt = require('bcryptjs');
-const sendLoginDetails = require('../Utils/Mailer'); // Assuming you have a mailer utility to send emails
-const crypto = require('crypto'); // For generating random passwords
+const bcrypt = require('bcryptjs'); // 🔒 The password encryption wizard
+const sendLoginDetails = require('../Utils/Mailer'); // 📬 Our trusty email owl delivery service
+const crypto = require('crypto'); // 🎲 Digital dice for password generation
 
-// Create a new librarian
+// 🎓 The Librarian Graduation Ceremony!
+// Transform ordinary humans into certified book shepherds! 📚👨‍🏫
 const createLibrarianService = async (newUserData) => {
-  let newLibrarian;
-  let password = crypto.randomBytes(8).toString('hex'); // Generate a random password
+  let newLibrarian; // 👶 Future guardian of knowledge (not yet awakened)
+  let password = crypto.randomBytes(8).toString('hex'); // 🔑 Rolling 8 bytes of pure randomness for their secret key!
 
   try {
-    // Step 1: Create the librarian
+    // 🎯 Phase 1: The Librarian Awakening Ritual
     newLibrarian = new librarian(newUserData);
-    await newLibrarian.save();
+    await newLibrarian.save(); // 📜 Official librarian diploma granted!
 
-    // Step 2: Create the user for the librarian
+    // 🎯 Phase 2: The Digital Identity Creation Laboratory
+    // Every librarian needs their login credentials (it's like a superhero costume!)
     let newUser = new user({
       email: newUserData.email,
-      password, // Use the plain text password
-      role: 'librarian',
+      password, // 🔓 The password before it becomes unreadable
+      role: 'librarian', // 🏷️ Official title: "Keeper of Books and Silence"
     });
 
-    // Hash the password before saving
-    newUser.password = await bcrypt.hash(password, 10);
+    // 🔐 Password Scrambling Ceremony! (Making it hacker-proof)
+    newUser.password = await bcrypt.hash(password, 10); // 10 rounds of encryption = Pentagon-level security!
 
-    // Save the user
-    await newUser.save();
+    await newUser.save(); // 💾 Store our newly minted digital librarian
 
-    // Step 3: Send login details to the librarian's email
+    // 🎯 Phase 3: The Ceremonial Email Delivery!
+    // Send them their magical login scrolls (better than Hogwarts letters!)
     await sendLoginDetails(
       newUser.email,
-      'Librarian Account Created',
-      `Your account has been created. Email: ${newUser.email}, Password: ${password}`
+      'Librarian Account Created', // 🎉 Subject: "Welcome to the Knowledge Guild!"
+      `Your account has been created. Email: ${newUser.email}, Password: ${password}` // 📋 The sacred login incantation
     );
 
-    return { message: 'Success', librarian: newLibrarian, user: newUser };
+    return { message: 'Success', librarian: newLibrarian, user: newUser }; // 🏆 Another librarian joins the force!
+    
   } catch (err) {
-    // Rollback librarian creation if user creation fails
+    // 🚨 Emergency Rollback Protocol! 
+    // If something breaks, we clean up our mess (responsible wizardry!)
     if (newLibrarian) {
       try {
-        await librarian.deleteOne({ _id: newLibrarian._id });
+        await librarian.deleteOne({ _id: newLibrarian._id }); // 🗑️ Undo the librarian creation spell
       } catch (rollbackErr) {
-        console.error('Error rolling back librarian creation:', rollbackErr.message);
+        console.error('Error rolling back librarian creation:', rollbackErr.message); // 💥 Even our cleanup spell failed!
       }
     }
-    throw new Error(`Error creating librarian or user: ${err.message}`);
+    throw new Error(`Error creating librarian or user: ${err.message}`); // 📢 Announce our failure with dignity
   }
 };
 
-
-
-// Get all librarians
+// 📊 The Great Librarian Census!
+// Summon all librarians from across the digital realm! 🧙‍♀️🧙‍♂️
 const getAllLibrarians = async () => {
   try {
-    return await librarian.find();
+    return await librarian.find(); // 🔮 Magical librarian summoning spell!
+    
   } catch (err) {
-    throw new Error('Error fetching librarians: ' + err.message);
+    throw new Error('Error fetching librarians: ' + err.message); // 📡 Lost connection to librarian dimension
   }
 };
 
-// Get a librarian by ID
+// 🎯 The Librarian Tracker Supreme!
+// Find one specific librarian in the vast knowledge empire
 const getLibrarianById = async (id) => {
   try {
+    // 🔍 Precision targeting: Locate the chosen librarian!
     const librarianData = await librarian.findById(id);
+    
     if (!librarianData) {
-      throw new Error('Librarian not found');
+      throw new Error('Librarian not found'); // 👻 This librarian has vanished behind the stacks!
     }
-    return librarianData;
+    
+    return librarianData; // 🎁 Your requested librarian, served with a side of knowledge!
+    
   } catch (err) {
-    throw new Error('Error fetching librarian by ID: ' + err.message);
+    throw new Error('Error fetching librarian by ID: ' + err.message); // 🚨 Librarian hunt expedition failed!
   }
 };
 
-// Update a librarian by ID
+// ✨ The Librarian Enhancement Laboratory!
+// Upgrade librarian stats faster than they can say "late fees"
 const updateLibrarianById = async (id, updateData) => {
   try {
+    // 🔄 The magnificent transformation: old librarian → new and improved librarian!
     const updatedLibrarian = await librarian.findByIdAndUpdate(id, updateData, { new: true });
+    // { new: true } = "Show me the upgraded version, not the dusty archive copy!"
+    
     if (!updatedLibrarian) {
-      throw new Error('Librarian not found');
+      throw new Error('Librarian not found'); // 🎭 Attempted to upgrade a phantom librarian
     }
-    return updatedLibrarian;
+    
+    return updatedLibrarian; // ✨ Behold! Your librarian has been enhanced!
+    
   } catch (err) {
-    throw new Error('Error updating librarian: ' + err.message);
+    throw new Error('Error updating librarian: ' + err.message); // 💔 Enhancement procedure went awry
   }
 };
 
-// Delete a librarian by ID
+// 🎭 The Librarian Retirement Ceremony!
+// When librarians must leave the sacred halls of knowledge forever
 const deleteLibrarianById = async (id) => {
   try {
+    // 💀 The solemn farewell - removing a librarian from the realm
     const deletedLibrarian = await librarian.findByIdAndDelete(id);
+    
     if (!deletedLibrarian) {
-      throw new Error('Librarian not found');
+      throw new Error('Librarian not found'); // 🕳️ Tried to retire someone who was never hired
     }
 
-    // Also delete the associated user
-    await user.deleteOne({ email: deletedLibrarian.email });
+    // 🧹 Double cleanup duty! Delete their user account too (no loose ends!)
+    await user.deleteOne({ email: deletedLibrarian.email }); // 🗑️ Complete digital existence erasure
 
-    return { message: 'Librarian deleted successfully' };
+    return { message: 'Librarian deleted successfully' }; // 🎊 Farewell, guardian of books! Your watch has ended
+    
   } catch (err) {
-    throw new Error('Error deleting librarian: ' + err.message);
+    throw new Error('Error deleting librarian: ' + err.message); // 💣 Retirement ceremony exploded!
   }
 };
 
+// 📦 The Librarian Services Command Center!
+// Where all our knowledge-keeper management functions assemble
 module.exports = {
-  createLibrarianService,
-  getAllLibrarians,
-  getLibrarianById,
-  updateLibrarianById,
-  deleteLibrarianById,
+  createLibrarianService,  // 🎓 The academy graduation master
+  getAllLibrarians,        // 📊 The librarian census coordinator  
+  getLibrarianById,        // 🎯 The precision librarian locator
+  updateLibrarianById,     // ✨ The librarian enhancement specialist
+  deleteLibrarianById,     // 🎭 The retirement ceremony director
+  // Together, they manage the entire lifecycle of our knowledge guardians! 🤓📚✨
 };
