@@ -15,7 +15,7 @@ const createRecordService = async (recordData) => {
     }
 
     // 📊 Stock check! Are we about to disappoint someone? (Probably yes)
-    if (book.available < recordData.quantity) {
+    if (book.available < 1) {
       throw new Error(`Sorry ! ${book.title} is out of stock `); // 😢 Dreams crushed by inventory
     }
     
@@ -26,7 +26,7 @@ const createRecordService = async (recordData) => {
     }
 
     // 🎪 The main event! Time to juggle books like a circus performer
-    if (recordData.status === 'issued') {
+    if (recordData.status === 'issue') {
       // 🚫 Anti-hoarding policy: One book per person (we're not running Amazon here!)
       if (borrower.booksBorrowed.includes(recordData.bookId)) {
         throw new Error('Book already borrowed by this borrower'); // 🤷‍♂️ Someone's being greedy!
@@ -37,9 +37,13 @@ const createRecordService = async (recordData) => {
       await borrower.save(); // Save the evidence of their literary addiction
       
       book.available -= 1; // 📉 One less book in our fortress of knowledge
+      await book.save(); // 💾 Save the book's updated availability first!
+
+
+      console.log("Book issued sucessfully") // 👀 Peek at the book's new status
     
     }
-    else if(recordData.status === 'returned') {
+    else if(recordData.status === 'return') {
       // 🔄 The Return of the Book (better sequel than most movies)
       if (!borrower.booksBorrowed.includes(recordData.bookId)) {
         throw new Error('Book was not borrowed by this borrower or returned already'); 
@@ -56,9 +60,13 @@ const createRecordService = async (recordData) => {
       if (book.available > book.quantity) {
         book.available = book.quantity; // Reality check: Physics still applies here
       } 
+
+      await book.save(); // 💾 Save the book's updated availability first!
+      // Change status to issue
+      console.log("Book returned sucessfully") // 👀 Peek at the book's new status
     }
     
-    await book.save(); // Save our book's updated social status
+    await book.save(); // Save our book's updated social status (this was happening too late!)
     
     // 🎉 The grand finale! Create the official record (like a birth certificate for transactions)
     const newRecord = new Record(recordData);
@@ -146,6 +154,29 @@ const deleteRecordByIdService = async (id) => {
   }
 };
 
+// 🔄 The Status Shapeshifter! 
+// Magically transforms record status from issue to return (and vice versa)
+const changeStatus = async(record) => {
+  try {
+    const Status = record.status; // 📋 Current status inspection
+    if(Status === 'issue') {
+      record.status = 'return'; // 🔄 Change status to returned
+    }
+    else if(Status === 'return') {
+      record.status = 'issue'; // 🔄 Change status to issued
+    }
+    // 💾 CRITICAL: Save the status change to the database!
+    // (Previously this was just changing memory, not the actual database)
+
+      await record.save(); // Save if it's a Mongoose document
+    
+    // If it's just plain data, the calling function will handle the save
+  }
+  catch (error) {
+    throw new Error('Error changing record status: ' + error.message); // 💥 Status change failed!
+  }
+}
+
 // 📦 The Export Department! 
 // Where all our beautiful functions go to meet the outside world
 module.exports = {
@@ -154,5 +185,6 @@ module.exports = {
   getRecordByIdService,   // 🕵️ The detective (finds specific records)
   updateRecordByIdService,// ✏️ The makeover artist (changes things)
   deleteRecordByIdService,// 🗑️ The cleanup crew (removes the evidence)
+  changeStatus,           // 🔄 The status shapeshifter (now available for export!)
   // Together, they form the ultimate library management dream team! 🦸‍♀️🦸‍♂️
 };

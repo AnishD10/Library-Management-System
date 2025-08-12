@@ -2,9 +2,9 @@ const recordService = require('../Services/recordServices');
 
 // Create a new record
 const createRecord = async (req, res) => {
-  const { bookId, borrowerId, librarianId, status} = req.body;
+  const { bookId, borrowerId ,status } = req.body;
 
-  if (!bookId || !borrowerId || !librarianId || !status) {
+  if (!bookId || !borrowerId || !status) {
     return res.status(400).json({ message: 'All fields are required' });
   }
 

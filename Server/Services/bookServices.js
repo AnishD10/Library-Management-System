@@ -8,6 +8,7 @@ const createBookService = async (bookData) => {
   try {
     // 🎨 Crafting a new book like a literary blacksmith
     const newBook = new Book(bookData);
+    newBook.available = bookData.quantity; // 📚 Set available quantity to total quantity
     await newBook.save(); // 💾 Immortalize this masterpiece in the database
     
     return { message: 'Book created successfully', book: newBook }; // 🎉 Another book baby is born!
