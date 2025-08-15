@@ -7,6 +7,7 @@ const borrowerSchema = new mongoose.Schema({
   phone: { type: String, required: true },
   address: { type: String, required: true },
   booksBorrowed: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Book' } ],
+  fine : { type: Number, default: 0 },
 });
 
 const borrower = mongoose.model('Borrower', borrowerSchema);

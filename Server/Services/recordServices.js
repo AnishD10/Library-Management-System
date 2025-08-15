@@ -49,7 +49,9 @@ const createRecordService = async (recordData) => {
         throw new Error('Book was not borrowed by this borrower or returned already'); 
         // 🤔 Either they're lying or have memory issues
       }
-      
+      if(borrower.fine > 0) {
+        throw new Error('Please clear up the charges before returning the book'); 
+      }// 💸
       // 🗑️ Remove book from their collection (bye bye, literary friend!)
       borrower.booksBorrowed.pull(recordData.bookId);
       await borrower.save(); // Update their reading resume
@@ -154,28 +156,7 @@ const deleteRecordByIdService = async (id) => {
   }
 };
 
-// 🔄 The Status Shapeshifter! 
-// Magically transforms record status from issue to return (and vice versa)
-const changeStatus = async(record) => {
-  try {
-    const Status = record.status; // 📋 Current status inspection
-    if(Status === 'issue') {
-      record.status = 'return'; // 🔄 Change status to returned
-    }
-    else if(Status === 'return') {
-      record.status = 'issue'; // 🔄 Change status to issued
-    }
-    // 💾 CRITICAL: Save the status change to the database!
-    // (Previously this was just changing memory, not the actual database)
-
-      await record.save(); // Save if it's a Mongoose document
-    
-    // If it's just plain data, the calling function will handle the save
-  }
-  catch (error) {
-    throw new Error('Error changing record status: ' + error.message); // 💥 Status change failed!
-  }
-}
+// 🔄 The Status Shapeshifter
 
 // 📦 The Export Department! 
 // Where all our beautiful functions go to meet the outside world
@@ -185,6 +166,6 @@ module.exports = {
   getRecordByIdService,   // 🕵️ The detective (finds specific records)
   updateRecordByIdService,// ✏️ The makeover artist (changes things)
   deleteRecordByIdService,// 🗑️ The cleanup crew (removes the evidence)
-  changeStatus,           // 🔄 The status shapeshifter (now available for export!)
+
   // Together, they form the ultimate library management dream team! 🦸‍♀️🦸‍♂️
 };

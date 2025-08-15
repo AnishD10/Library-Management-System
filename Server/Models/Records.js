@@ -5,8 +5,11 @@ const recordSchema = new mongoose.Schema({
   borrowerId: { type: mongoose.Schema.Types.ObjectId, ref: 'Borrower', required: true },
   librarianId: { type: mongoose.Schema.Types.ObjectId, ref: 'Librarian'},
   issueDate: { type: Date, default: Date.now },
-  reminderDate : {type:Date , default : () => new Date(Date.now() + 14 * 24 * 60 * 1000) }, // Default to 14 days from issue
- dueDate: { type: Date, default : () => new Date(Date.now() + 30 *24 * 60 *1000 )}, // When the book is due back 30 days
+  dueDate: { type: Date , default: function() {
+    const date = new Date(this.issueDate);
+    date.setDate(date.getDate() + 30); // Set due date to 30 days after issue date
+    return date;
+  }},
   status: { type: String, enum: ['issue', 'return'], default: 'issue'},
 });
 
