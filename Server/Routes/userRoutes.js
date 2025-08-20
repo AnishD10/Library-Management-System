@@ -1,3 +1,5 @@
+// Get current user profile (protected route)
+
 const express = require('express');
 const router = express.Router();
 const userController = require('../Controllers/userController');
@@ -5,7 +7,7 @@ const roleAccess = require('../Middlewaeres/role');
 const authorize = require('../Middlewaeres/auth'); 
 const {payFine , renewBook} = require('../Utils/FineOperations'); // Import fine operations utility
 // Import role middleware
-
+router.get('/profile', authorize, userController.getProfile);
 // Define routes for user-related operations
 router.post('/login', userController.loginUser);
 router.post('/forgotPassword', userController.forgotPassword);

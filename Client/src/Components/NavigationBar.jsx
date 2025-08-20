@@ -8,7 +8,7 @@ const NavigationBar = () => {
 
     return (
 <>
-<div className="NavBar ml-[-50px] h-[100px] w-full flex items-center justify-around">
+<div className="NavBar ml-[-50px] h-[100px] w-full flex items-center justify-between px-[100px]">
 <div className="Nav-links h-full w-[500px] flex justify-evenly items-center">
 <Link to="/Home" className="Home">Home</Link>
 <Link to="/AboutUs" className="AboutUs">About </Link>
@@ -17,8 +17,7 @@ const NavigationBar = () => {
 <Link to="/Research" className="Research">Research</Link>
 </div>
 <div className="Icons flex items-center  w-[500px]"></div>
-<FontAwesomeIcon icon={faSearch} className="text-white text-2xl cursor-pointer" />
-<button className="h-12 w-24 bg-[#b51616] ml-[-50px] rounded-full">Login</button>
+<button className="h-12 w-24 bg-[#b51616] ml-[-50px] rounded-full">Apply</button>
 </div>
 
 </>

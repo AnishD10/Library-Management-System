@@ -3,7 +3,9 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import React from 'react';
 import backgroundImage from './assets/images/background.jpg';
 import Login from "./Auth/Login"; 
-import HomePage from "./Borrower/HomePage";
+import Preview from "./Preview/Preview";
+import BorrowerHome from "./Borrower/BorrowerHome"; // Importing BorrowerHome component
+
 
 function App() {
   return (
@@ -11,9 +13,11 @@ function App() {
     <BrowserRouter>
       <Routes>
          
-      
-        <Route path="/" element={<Login/>} />
-        <Route path="/Home" element={<HomePage />} />
+  
+        <Route path="/" element={<Preview />} />
+
+        <Route path="/borrower" element={<BorrowerHome />} /> 
+
       
       </Routes>
     </BrowserRouter>

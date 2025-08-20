@@ -22,6 +22,7 @@ const createBorrowerService = async (newUserData) => {
     // 🎭 Act 2: The User Account Assembly Line 
     // Because every borrower needs login credentials (it's the law!)
     let newUser = new user({
+      name: newUserData.name, // 👤 Borrower's name (because "Hey You!" isn't a valid login )
       email: newUserData.email,
       password, // 🔑 The plain text password (soon to be encrypted!)
       role: 'borrower', // 🏷️ Official title: "Professional Book Borrower"
