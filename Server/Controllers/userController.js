@@ -1,3 +1,4 @@
+// User Controller: Handles all user-related operations. Users: the real plot twist.
 
 
 const User = require('../Models/User');

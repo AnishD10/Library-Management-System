@@ -1,3 +1,4 @@
+// Mailer Utility: Sends emails. Because even books need to send mail sometimes.
 const nodemailer = require("nodemailer");
 
 const sendLoginDetails = async (to, subject, text) => {

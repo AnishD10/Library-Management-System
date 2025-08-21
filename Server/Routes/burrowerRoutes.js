@@ -1,3 +1,4 @@
+// Borrower Routes: Endpoints for borrower operations. Borrowers need directions too.
 const express = require('express');
 const router = express.Router();
 const borrowerController = require('../Controllers/burrowerController');
@@ -7,10 +8,10 @@ const roleAccess = require('../Middlewaeres/role');
 router.post('/', borrowerController.createBorrower);
 
 // Get all borrowers
-router.get('/', roleAccess('librarian'), borrowerController.getAllBorrowers);
+router.get('/', borrowerController.getAllBorrowers);
 
 // Get a borrower by ID
-router.get('/:id', roleAccess('librarian'), borrowerController.getBorrowerById);
+router.get('/:id', borrowerController.getBorrowerById);
 
 // Update a borrower by ID
 router.put('/:id', roleAccess('librarian'), borrowerController.updateBorrowerById);

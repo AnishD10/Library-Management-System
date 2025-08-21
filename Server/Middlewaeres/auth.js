@@ -1,3 +1,4 @@
+// Auth Middleware: Checks if you have the golden ticket (token).
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
@@ -24,4 +25,5 @@ module.exports = (req, res, next) => {
     res.status(403).json({ message: "Forbidden", error: err.message });
   }
 };
+
 

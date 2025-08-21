@@ -1,3 +1,4 @@
+// Borrower Controller: Handles all borrower-related operations. Borrowers can't borrow code, but they can borrow books.
 const borrowerService = require('../Services/burrowerServices');
 const EmailFinder = require('../Utils/EmailFinder')
 

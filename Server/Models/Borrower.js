@@ -1,3 +1,4 @@
+// Borrower Model: Mongoose schema for borrowers. Borrowers: the reason libraries exist.
 const mongoose = require('mongoose');
 const book = require('./Book');
 

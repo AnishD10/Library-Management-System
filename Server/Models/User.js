@@ -1,3 +1,4 @@
+// User Model: Mongoose schema for users. Users: the plot thickens.
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({

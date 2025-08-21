@@ -1,3 +1,4 @@
+// Reminder Utility: Sends reminders. Because even the best of us forget (especially to return books).
 const cron = require('node-cron');
 const User = require('../Models/User');
 const Mailer = require('./Mailer')

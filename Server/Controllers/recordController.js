@@ -1,3 +1,4 @@
+// Record Controller: Handles all record-related operations. Because every book deserves a paper trail.
 const recordService = require('../Services/recordServices');
 
 // Create a new record

@@ -1,3 +1,4 @@
+// Book Model: Mongoose schema for books. Every book needs a home (in the database).
 const mongoose = require('mongoose');
 
 const bookSchema = new mongoose.Schema({
@@ -6,6 +7,7 @@ const bookSchema = new mongoose.Schema({
   isbn : { type: String, required: true, unique: true },
   quantity: { type: Number, required: true },
   available: { type: Number },
+  coverImage: { type: String, default: null }, // Default cover image
 });
 
 const book = mongoose.model('Book', bookSchema);

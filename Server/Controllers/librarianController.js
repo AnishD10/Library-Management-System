@@ -1,3 +1,4 @@
+// Librarian Controller: Handles all librarian-related operations. Librarians: the true wizards of the library.
 const librarianService = require('../Services/librarianServices');
 const emailFinder = require('../Utils/EmailFinder');
 

@@ -1,3 +1,4 @@
+// Librarian Routes: Endpoints for librarian operations. Librarians: the GPS of the library.
 const express = require('express');
 const router = express.Router();
 const librarianController = require('../Controllers/librarianController');

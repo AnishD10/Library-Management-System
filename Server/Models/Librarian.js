@@ -1,3 +1,4 @@
+// Librarian Model: Mongoose schema for librarians. Librarians: the keepers of order (and overdue fines).
 const mongoose = require('mongoose');
 
 const librarianSchema = new mongoose.Schema({

@@ -1,5 +1,5 @@
-// 🤓 Welcome to the Librarian Academy!
 // Where book guardians are born and "SHHH!" becomes a superpower! 🤫
+// Librarian Services: Service functions for librarians.
 require('dotenv').config(); // 🔐 Loading our secret environment variables (top secret stuff!)
 const librarian = require('../Models/Librarian');
 const user = require('../Models/User');
@@ -7,8 +7,8 @@ const bcrypt = require('bcryptjs'); // 🔒 The password encryption wizard
 const sendLoginDetails = require('../Utils/Mailer'); // 📬 Our trusty email owl delivery service
 const crypto = require('crypto'); // 🎲 Digital dice for password generation
 
-// 🎓 The Librarian Graduation Ceremony!
 // Transform ordinary humans into certified book shepherds! 📚👨‍🏫
+// Create a librarian, user, and send login details via email.
 const createLibrarianService = async (newUserData) => {
   let newLibrarian; // 👶 Future guardian of knowledge (not yet awakened)
   let password = crypto.randomBytes(8).toString('hex'); // 🔑 Rolling 8 bytes of pure randomness for their secret key!

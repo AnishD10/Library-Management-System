@@ -1,3 +1,4 @@
+// Role Middleware: Role-based access control. Because not everyone can be a librarian.
 const RoleAccess = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {

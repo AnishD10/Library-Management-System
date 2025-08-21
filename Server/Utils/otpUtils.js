@@ -1,3 +1,4 @@
+// otpUtils Utility: Handles OTP operations. Because security shouldn't be a mystery.
 const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const User = require("../Models/User");

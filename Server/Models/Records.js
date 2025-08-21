@@ -1,3 +1,4 @@
+// Records Model: Mongoose schema for records. Every book's journey should be recorded.
 const mongoose = require('mongoose');
 
 const recordSchema = new mongoose.Schema({

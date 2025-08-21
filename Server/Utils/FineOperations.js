@@ -1,3 +1,4 @@
+// FineOperations Utility: Calculates fines. Because overdue books aren't free (and neither is pizza).
 const borrower = require('../Models/Borrower');
 const record = require('../Models/Records');
 const book = require('../Models/Book');

@@ -1,23 +1,22 @@
 const bookService = require('../Services/bookServices');
-
-// Create a new book
 const createBook = async (req, res) => {
-  const { title, isbn, author, quantity } = req.body;
-
-  // Validate required fields
-  if (!title ||  !author || !quantity) {
+  const { title, author, quantity } = req.body;
+  if (!title || !author || !quantity) {
     return res.status(400).json({ message: 'All fields are required' });
   }
 
   try {
-    const result = await bookService.createBookService(req.body);
+    let bookData = { ...req.body };
+    if (req.file) {
+      // Save only the filename, not the full path
+      bookData.coverImage = req.file.filename;
+    }
+    const result = await bookService.createBookService(bookData);
     return res.status(201).json(result);
   } catch (error) {
     return res.status(500).json({ message: 'Error creating book', error: error.message });
   }
 };
-
-// Get all books
 const getAllBooks = async (req, res) => {
   try {
     const books = await bookService.getAllBooksService();
@@ -26,8 +25,6 @@ const getAllBooks = async (req, res) => {
     return res.status(500).json({ message: 'Error fetching books', error: error.message });
   }
 };
-
-// Get a book by ID
 const getBookById = async (req, res) => {
   const { id } = req.params;
 
@@ -42,8 +39,6 @@ const getBookById = async (req, res) => {
     return res.status(404).json({ message: 'Book not found', error: error.message });
   }
 };
-
-// Update a book by ID
 const updateBookById = async (req, res) => {
   const { id } = req.params;
   const updateData = req.body;
@@ -63,8 +58,6 @@ const updateBookById = async (req, res) => {
     return res.status(404).json({ message: 'Error updating book', error: error.message });
   }
 };
-
-// Delete a book by ID
 const deleteBookById = async (req, res) => {
   const { id } = req.params;
 

@@ -1,3 +1,4 @@
+// User Routes: Endpoints for user operations. Users: always on the move.
 // Get current user profile (protected route)
 
 const express = require('express');
@@ -7,7 +8,8 @@ const roleAccess = require('../Middlewaeres/role');
 const authorize = require('../Middlewaeres/auth'); 
 const {payFine , renewBook} = require('../Utils/FineOperations'); // Import fine operations utility
 // Import role middleware
-router.get('/profile', authorize, userController.getProfile);
+router.get('/profile', userController.getProfile);
+router.get('/' , userController.getAllUsers); // Route to get all users
 // Define routes for user-related operations
 router.post('/login', userController.loginUser);
 router.post('/forgotPassword', userController.forgotPassword);

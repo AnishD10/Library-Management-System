@@ -20,9 +20,17 @@ const Login = () => {
       const response = await axios.post("http://localhost:3000/api/users/login", form);
       if (response.status === 200) {
         // Save token to localStorage
-        localStorage.setItem("token", response.data.token);
+        const { token ,role  } = response.data;
+        localStorage.setItem("token", token);
         // Optionally, save user role or other info if needed
-        window.location.href = "/borrower"; // Redirect to home page on successful login
+        if (role === 'librarian') {
+          window.location.href = "/librarian"; // Redirect to librarian home page
+        } else if (role === 'borrower') {
+          window.location.href = "/borrower"; // Redirect to borrower home page
+        } else {
+          alert("Unknown role, redirecting to borrower home.");
+          window.location.href = "/"; // Default to borrower home
+        }
         alert("Login successful");
       }
     } catch (err) {

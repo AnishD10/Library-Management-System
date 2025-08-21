@@ -1,63 +1,48 @@
-// 🤓 Welcome to the Borrower Registration Center!
-// Where book lovers get their official "I Promise Not To Steal Books" license! 📜
+// Borrower Services: Service functions for borrowers.
 const Borrower = require('../Models/Borrower');
-const crypto = require('crypto'); // 🎲 For generating random passwords (like a digital dice roll)
-const bcrypt = require('bcryptjs'); // 🔐 The password scrambler supreme
+const crypto = require('crypto');
+const bcrypt = require('bcryptjs');
 const user = require('../Models/User');
-const sendLoginDetails = require('../Utils/Mailer'); // 📧 Our friendly neighborhood email delivery service
-// Because borrowers need to know their secret codes! 🕵️‍♂️
+const sendLoginDetails = require('../Utils/Mailer');
 
-// 🎪 The Great Borrower Creation Circus!
-// A three-ring performance: Create borrower → Create user → Send email magic! ✨
+// Create a borrower, user, and send login details via email.
 const createBorrowerService = async (newUserData) => {
-  let newBorrower; // 👶 Our borrower baby (not yet born)
-  let password = crypto.randomBytes(8).toString('hex'); // 🎲 Rolling the dice for a password (8 bytes of pure randomness!)
+  let newBorrower;
+  let password = crypto.randomBytes(8).toString('hex');
 
   try {
-    // 🎭 Act 1: The Borrower Birth Certificate Creation
-    // (Copy-paste comment says "librarian" but we're making borrowers - plot twist! 😄)
-    newBorrower = new Borrower(newUserData);
-    await newBorrower.save(); // 📋 Official borrower registration complete!
+  // Create and save borrower
+  newBorrower = new Borrower(newUserData);
+  await newBorrower.save();
 
-    // 🎭 Act 2: The User Account Assembly Line 
-    // Because every borrower needs login credentials (it's the law!)
+    // Create user and hash password
     let newUser = new user({
-      name: newUserData.name, // 👤 Borrower's name (because "Hey You!" isn't a valid login )
+      name: newUserData.name,
       email: newUserData.email,
-      password, // 🔑 The plain text password (soon to be encrypted!)
-      role: 'borrower', // 🏷️ Official title: "Professional Book Borrower"
+      password,
+      role: 'borrower',
     });
-    
-    console.log(password) // 👀 Peek at the password before it gets scrambled
-    
-    // 🔐 Password Scrambling Session! (Make it unreadable to humans)
-    newUser.password = await bcrypt.hash(password, 10); // 10 rounds of scrambling = Fort Knox level security
-
-    await newUser.save(); // 💾 Save our newly minted user to the digital vault
-
-    // 🎭 Act 3: The Email Delivery Performance!
-    // Send them their shiny new login details (like delivering a golden ticket!)
+    newUser.password = await bcrypt.hash(password, 10);
+    await newUser.save();
+    // Send login details via email
     await sendLoginDetails(
       newUser.email,
-      'Borrower Account Created', // 🎉 Subject: "Welcome to the book borrowing club!"
-      `Your account has been created. Email: ${newUser.email}, Password: ${password}` // 📝 The sacred login scroll
+      password // send the generated password
     );
-
-    return { message: 'Success', borrower: newBorrower, user: newUser }; // 🏆 Triple win!
-    
+    return newBorrower;
   } catch (err) {
-    // 🚨 Emergency Cleanup Protocol! 
-    // If anything goes wrong, we clean up our mess (responsible coding!)
+    // Roll back borrower creation if anything fails
     if (newBorrower) {
       try {
-        await Borrower.deleteOne({ _id: newBorrower._id }); // 🗑️ Undo the borrower creation
+        await Borrower.deleteOne({ _id: newBorrower._id });
       } catch (rollbackErr) {
-        console.error('Error rolling back borrower creation:', rollbackErr.message); // 💥 Even the cleanup failed!
+        console.error('Error rolling back borrower creation:', rollbackErr.message);
       }
     }
-    throw new Error(`Error creating borrower or user: ${err.message}`); // 📢 Announce our failure with dignity
+    throw new Error(`Error creating borrower or user: ${err.message}`);
   }
 };
+
 
 // 📊 The Borrower Census Bureau!
 // Count all our lovely book borrowers (and their reading habits!)
