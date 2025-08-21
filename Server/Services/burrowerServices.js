@@ -4,6 +4,7 @@ const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const user = require('../Models/User');
 const sendLoginDetails = require('../Utils/Mailer');
+const borrower = require('../Models/Borrower');
 
 // Create a borrower, user, and send login details via email.
 const createBorrowerService = async (newUserData) => {
@@ -17,6 +18,7 @@ const createBorrowerService = async (newUserData) => {
 
     // Create user and hash password
     let newUser = new user({
+      borrowerId: newBorrower._id, // Link user to borrower
       name: newUserData.name,
       email: newUserData.email,
       password,

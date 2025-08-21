@@ -17,7 +17,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Preview />} />
-          <Route path="/borrower" element={<BorrowerHome />} />
+          <Route path="/borrower" element={<BorrowerHome />}>
+          </Route>
           <Route path="/librarian" element={<LibrarianHome />}>
           <Route path="books" element={<Book />} />
           <Route path="borrowers" element={<Borrower />} />

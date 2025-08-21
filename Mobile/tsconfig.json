@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts",
+    "nativewind-env.d.ts",
+    "assets/svgs/NotFoundSvgIllustration.js"
+  ],
+  "extends": "expo/tsconfig.base"
+}

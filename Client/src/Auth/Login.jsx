@@ -20,7 +20,7 @@ const Login = () => {
       const response = await axios.post("http://localhost:3000/api/users/login", form);
       if (response.status === 200) {
         // Save token to localStorage
-        const { token ,role  } = response.data;
+        const { token ,role } = response.data;
         localStorage.setItem("token", token);
         // Optionally, save user role or other info if needed
         if (role === 'librarian') {

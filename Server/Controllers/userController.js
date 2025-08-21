@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 const { generateOtp, findUserByOtp, clearOtpFields } = require("../Utils/otpUtils");
 const nodemailer = require('nodemailer');
 const EmailFinder = require('../Utils/EmailFinder');
+const borrower = require('../Models/Borrower');
 
 
 
@@ -44,8 +45,25 @@ const loginUser = asyncHandler(async (req, res) => {
   if (!isMatch) {
     return res.status(401).json({ message: 'Invalid credentials' });
   }
-  const token = jwt.sign({ id: user._id, role: user.role , name: user.name}, process.env.JWT_SECRET, { expiresIn: '1h' });
-  res.status(200).json({ message: 'Login successful', token, role: user.role , name :user.name });
+  await user.populate('borrowerId'); // or 'borrowerId' if that's your field
+  const token = jwt.sign(
+    {
+      id: user._id,
+      role: user.role,
+      borrowerId: user.borrowerId?._id,
+      borrowerName: user.borrowerId?.name
+    },
+    process.env.JWT_SECRET,
+    { expiresIn: '1h' }
+  );
+  res.status(200).json({
+    message: 'Login successful',
+    token,
+    role: user.role,
+    name: user.name,
+    borrowerId: user.borrowerId?._id,
+    borrowerName: user.borrowerId?.name
+  });
 });
 
 // Forgot password

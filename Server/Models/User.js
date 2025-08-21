@@ -2,7 +2,7 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-  name: { type: String, required: true },
+ borrowerId: { type: mongoose.Schema.Types.ObjectId, ref: 'Borrower',},
   email: { type: String, required: true },
   password: { type: String, required: true } ,
   role : { type: String, enum: ['librarian', 'borrower'], default: 'borrower' },

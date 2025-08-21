@@ -1,0 +1,231 @@
+1.	Complete
+	a.	Dashboard by 9 AM
+	b.	User Management Page by 10 AM
+	c.	User Profile by 12 PM
+	d.	Revamp Sign In page + Create Sign up by 1 PM (that means no break in between)
+	e.	Leave Attendance try to complete as soon as possible or 4 PM (need to check out UI and see how we can implement calendar)
+
+
+const dashboardSecondSection = [{
+id: 1,
+image: AddClient,
+title: Client Management,
+FaIcon: faGreaterthan
+},
+{
+id: 1,
+image: AddClient,
+title: Client Management,
+FaIcon: faGreaterthan
+},{
+id: 1,
+image: AddClient,
+title: Client Management,
+FaIcon: faGreaterthan
+},{
+id: 1,
+image: AddClient,
+title: Client Management,
+FaIcon: faGreaterthan
+},
+]
+
+
+---------color palette---------------
+	primary: "#3F51B5", // Royal Indigo
+        secondary: "#009688", // Teal Blue
+        background: "#F8F9FA", // Ghost White
+        surface: "#FFFFFF", // White
+        textPrimary: "#212121", // Charcoal Gray
+        textSecondary: "#757575", // Cool Gray
+        accent: "#FFB74D", // Gold Sand
+        error: "#E57373", // Soft Red
+        success: "#81C784", // Leaf Green
+underlayPrimary: #5e6bb7
+
+{
+title: "Add Employee",
+},
+{
+title: "Time Attendance",
+},
+{
+title: "Leave Management",
+},
+{
+title: "Employee Overtime",
+},
+{
+title: "Salary Statement",
+},
+{
+title: "Preference",
+}
+
+view
+	photo - left
+	joining date - left
+	id - right
+view
+	fullname - input
+	mobilenumber - number
+	designation - options
+	working days - options
+	view
+	basic pay radio or button per day or monthly
+	gender - options
+	add department
+	save - button
+
+redux 
+
+----------------
+picker - does not work on iOS as intented
+--------------
+
+    import React, { useState } from 'react';
+    import { Picker } from '@react-native-picker/picker';
+
+    const MyPicker = () => {
+      const [selectedValue, setSelectedValue] = useState('java');
+
+      return (
+        <Picker
+          selectedValue={selectedValue}
+          onValueChange={(itemValue, itemIndex) =>
+            setSelectedValue(itemValue)
+          }>
+          <Picker.Item label="Java" value="java" />
+          <Picker.Item label="JavaScript" value="js" />
+          <Picker.Item label="Python" value="python" />
+        </Picker>
+      );
+    };
+
+-------------------
+useful maybe?
+-------------------
+<View
+            key={item.employeeId}
+            className="m-4 bg-white p-4 rounded-xl flex-row justify-between"
+            style={
+              Platform.OS === "ios"
+                ? {
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 1 },
+                    shadowOpacity: 0.15,
+                    shadowRadius: 3,
+                    //   borderColor: item.color,
+                  }
+                : {
+                    elevation: 2,
+                    //   borderColor: item.color,
+                  }
+            }
+          >
+            <View className="gap-1">
+              <View className="h-12 w-12 rounded-full border border-textSecondary ">
+                {!item.profilePhoto ? (
+                  <Image
+                    source={{ uri: item.profilePhoto }}
+                    className="h-full w-full rounded-full object-cover"
+                  />
+                ) : (
+                  <Avatar height="40px" width="40px" />
+                )}
+              </View>
+
+              <View className="flex-row items-baseline gap-2">
+                <Text className="font-bold text-textPrimary text-2xl">
+                  {item.fullName}
+                </Text>
+                <Text className="text-sm text-textSecondary">
+                  {new Date(item.joiningDate).toLocaleDateString()}
+                </Text>
+              </View>
+
+              <View className="flex-row items-end gap-2">
+                <Text className="text-xl font-semibold">
+                  {item.designation}
+                </Text>
+                <Text className="p-1 bg-secondary rounded-lg text-white">
+                  {item.department}
+                </Text>
+              </View>
+              {/* <Text>{workingNoToDays(workingDays)}</Text> */}
+              <View className="flex-row gap-1">
+                {workingNoToDays(item.workingDays).map((day, index) => (
+                  <Text
+                    className="rounded-lg bg-secondary p-1 text-white"
+                    key={index}
+                  >
+                    {day}
+                  </Text>
+                ))}
+              </View>
+
+              <View className="flex-row items-end gap-2">
+                <Text className="text-xl font-semibold">
+                  Rs. {item.basicPay}
+                </Text>
+                <Text className="p-1 bg-secondary rounded-lg text-white">
+                  {item.perDay ? "Per Day" : "Per Month"}
+                </Text>
+              </View>
+            </View>
+
+            <View className="flex-row gap-2">
+              <TouchableOpacity
+                onPress={() => navigation.navigate("addEmployee")}
+              >
+                <FontAwesomeIcon icon={faEdit} size={20} color="#81C784" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  Alert.alert(
+                    "Login Failed",
+                    "Multiple Logins Are Found. \n Logout From All Other Devices to Continue.",
+                    [
+                      {
+                        text: "Proceed ?",
+                        onPress: () => {},
+                      },
+                      {
+                        text: "No",
+                        onPress: () => {},
+                        style: "cancel",
+                      },
+                    ],
+                    { cancelable: false }
+                  );
+                }}
+              >
+                <FontAwesomeIcon icon={faTrash} size={20} color="#E57373" />
+              </TouchableOpacity>
+            </View>
+          </View>
+
+
+--------------------------------
+sign in -  UI
+--------------------------------
+view
+	label - phn/email/username
+	input
+
+	label - pass
+	input
+
+	view
+	toggle - save me 		forgot pass
+	button
+		no employee? sign up
+
+-----------------
+form for leave
+-----------------
+date
+time in
+time out
+reason
+employeeID (initial state) - get this shi from localstorage... in this case, SecureStorage (does not work on web)
