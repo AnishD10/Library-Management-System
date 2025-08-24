@@ -1,0 +1,60 @@
+@keyframes modalFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-modalFadeIn {
+  animation: modalFadeIn 0.3s cubic-bezier(0.4,0,0.2,1) both;
+}
+/* Hide scrollbars utility for carousels */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --crimson: #DC143C;
+  --black: #000000;
+  --white: #ffffff;
+}
+
+
+body, html {
+  background: var(--black);
+  color: var(--white);
+  height: 100%;
+  /* Hide scrollbars but allow scrolling */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+body::-webkit-scrollbar, html::-webkit-scrollbar {
+  display: none;
+}
+
+
+.bg-black {
+  background-color: var(--black) !important;
+}
+.text-black {
+  color: var(--black) !important;
+}
+
+.bg-white {
+  background-color: var(--white) !important;
+}
+.text-white {
+  color: var(--white) !important;
+}
+
