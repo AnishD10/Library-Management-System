@@ -7,6 +7,9 @@ const bookSchema = new mongoose.Schema({
   isbn : { type: String, required: true, unique: true },
   quantity: { type: Number, required: true },
   available: { type: Number },
+  description : { type: String, default: 'No description available.' },
+  quote: { type: String, default: 'No quote available.' },
+  category: { type: String, default: 'General' },
   coverImage: { type: String, default: null }, // Default cover image
 });
 
