@@ -1,88 +1,159 @@
+import React, { useState, useRef } from 'react';
+import axios from 'axios';
 
-import React, { useState } from "react";
-import axios from "axios";
+const API_URL = "http://localhost:3000";
 
-const Login = () => {
-  const [form, setForm] = useState({
-    email: "",
-    password: ""
-  });
+export default function Auth() {
+  const [loginForm, setLoginForm] = useState({ email: '', password: '' });
+  const [registerForm, setRegisterForm] = useState({ name: '', email: '', phone: '', address: '', password: '' });
+  const [message, setMessage] = useState('');
+  const [isRegister, setIsRegister] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [info, setInfo] = useState(''); // <-- Add info state
+  const containerRef = useRef();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target; 
-    setForm((prev) => ({ ...prev, [name]: value }));
+  const handleLoginChange = (e) => setLoginForm({ ...loginForm, [e.target.name]: e.target.value });
+  const handleRegisterChange = (e) => setRegisterForm({ ...registerForm, [e.target.name]: e.target.value });
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setMessage('');
+    setSuccess(false);
+    try {
+      const res = await axios.post(`${API_URL}/api/users/login`, loginForm);
+      localStorage.setItem("token", res.data.token);
+      setSuccess(true);
+      setMessage("Login successful!");
+      setTimeout(() => {
+        window.location.href = res.data.role === "librarian" ? "/librarian" : "/borrower";
+      }, 1200);
+    } catch (err) {
+      setMessage(err.response?.data?.message || "Login failed");
+    }
   };
 
-
-  const handleSubmit = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
+    setMessage('');
+    setSuccess(false);
     try {
-      const response = await axios.post("http://localhost:3000/api/users/login", form);
-      if (response.status === 200) {
-        // Save token to localStorage
-        const { token ,role } = response.data;
-        localStorage.setItem("token", token);
-        // Optionally, save user role or other info if needed
-        if (role === 'librarian') {
-          window.location.href = "/librarian"; // Redirect to librarian home page
-        } else if (role === 'borrower') {
-          window.location.href = "/borrower"; // Redirect to borrower home page
-        } else {
-          alert("Unknown role, redirecting to borrower home.");
-          window.location.href = "/"; // Default to borrower home
-        }
-        alert("Login successful");
-      }
+      await axios.post(`${API_URL}/api/borrowers`, registerForm);
+      setSuccess(true);
+      setInfo("Your login credentials are sent to your email.");
+      setIsRegister(false); // Switch to login form
+      setMessage('');
     } catch (err) {
-      if (err.response && err.response.data && err.response.data.message) {
-        alert(err.response.data.message);
-      } 
+      setMessage(err.response?.data?.message || "Registration failed");
     }
   };
 
   return (
-    <form
-      className="flex flex-col gap-6 w-full max-w-md bg-white/10 border border-white/30 rounded-lg p-8 shadow-lg backdrop-blur-sm"
-      onSubmit={handleSubmit}
+    <div
+      ref={containerRef}
+      className="min-h-screen flex items-center justify-center bg-black"
     >
-      <div className="relative">
-        <input
-          type="email"
-          name="email"
-          className="border-b border-white/50 w-full py-2 bg-transparent text-white focus:outline-none focus:border-red-500 focus:border-b-2 transition-colors peer placeholder-transparent"
-          autoComplete="off"
-          onChange={handleChange}
-        />
-        <label
-          htmlFor="email"
-          className="absolute left-0 top-2 text-white/80 cursor-text peer-focus:text-xs peer-focus:-top-4 peer-focus:text-red-400 transition-all pointer-events-none"
-        >
-          Email
-        </label>
+      <div className="w-full max-w-2xl bg-[#181818] rounded-xl shadow-lg flex flex-col md:flex-row overflow-hidden">
+        {/* Register */}
+        <div className={`flex-1 p-8 ${isRegister ? "" : "hidden md:block"}`}>
+          <h2 className="text-2xl font-bold text-white mb-6 text-center">Register</h2>
+          <form onSubmit={handleRegister} className="flex flex-col gap-4">
+            <input
+              name="name"
+              placeholder="Name"
+              value={registerForm.name}
+              onChange={handleRegisterChange}
+              className="px-4 py-2 rounded bg-[#232323] text-white border border-gray-600"
+              required
+            />
+            <input
+              name="email"
+              placeholder="Email"
+              value={registerForm.email}
+              onChange={handleRegisterChange}
+              className="px-4 py-2 rounded bg-[#232323] text-white border border-gray-600"
+              required
+            />
+            <input
+              name="phone"
+              placeholder="Phone"
+              value={registerForm.phone}
+              onChange={handleRegisterChange}
+              className="px-4 py-2 rounded bg-[#232323] text-white border border-gray-600"
+              required
+            />
+            <input
+              name="address"
+              placeholder="Address"
+              value={registerForm.address}
+              onChange={handleRegisterChange}
+              className="px-4 py-2 rounded bg-[#232323] text-white border border-gray-600"
+              required
+            />
+            <button
+              type="submit"
+              className="bg-[#DC143C] hover:bg-[#a10e2a] text-white font-semibold py-2 rounded"
+            >
+              Register
+            </button>
+            <p className="text-gray-400 text-sm text-center">
+              Already have an account?{" "}
+              <span
+                className="text-[#DC143C] cursor-pointer"
+                onClick={() => setIsRegister(false)}
+              >
+                Login
+              </span>
+            </p>
+            {isRegister && message && (
+              <p className={`text-center ${success ? "text-green-400" : "text-red-400"}`}>{message}</p>
+            )}
+          </form>
+        </div>
+        {/* Login */}
+        <div className={`flex-1 p-8 ${isRegister ? "hidden md:block" : ""}`}>
+          <h2 className="text-2xl font-bold text-white mb-6 text-center">Login</h2>
+          <form onSubmit={handleLogin} className="flex flex-col gap-4">
+            <input
+              name="email"
+              placeholder="Email"
+              value={loginForm.email}
+              onChange={handleLoginChange}
+              className="px-4 py-2 rounded bg-[#232323] text-white border border-gray-600"
+              required
+            />
+            <input
+              name="password"
+              type="password"
+              placeholder="Password"
+              value={loginForm.password}
+              onChange={handleLoginChange}
+              className="px-4 py-2 rounded bg-[#232323] text-white border border-gray-600"
+              required
+            />
+            <button
+              type="submit"
+              className="bg-[#DC143C] hover:bg-[#a10e2a] text-white font-semibold py-2 rounded"
+            >
+              Login
+            </button>
+            <p className="text-gray-400 text-sm text-center">
+              Don't have an account?{" "}
+              <span
+                className="text-[#DC143C] cursor-pointer"
+                onClick={() => setIsRegister(true)}
+              >
+                Register
+              </span>
+            </p>
+            {info && (
+              <p className="text-center text-green-400">{info}</p>
+            )}
+            {!isRegister && message && (
+              <p className={`text-center ${success ? "text-green-400" : "text-red-400"}`}>{message}</p>
+            )}
+          </form>
+        </div>
       </div>
-      <div className="relative">
-        <input
-          type="password"
-          name="password"
-          className="border-b border-white/50 w-full py-2 bg-transparent text-white focus:outline-none focus:border-red-500 focus:border-b-2 transition-colors peer placeholder-transparent"
-          autoComplete="off"
-          onChange={handleChange}
-        />
-        <label
-          htmlFor="password"
-          className="absolute left-0 top-2 text-white/80 cursor-text peer-focus:text-xs peer-focus:-top-4 peer-focus:text-red-400 transition-all pointer-events-none"
-        >
-          Password
-        </label>
-      </div>
-      <button
-        type="submit"
-        className="mt-4 bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded transition-colors"
-      >
-        Login
-      </button>
-    </form>
+    </div>
   );
-};
-
-export default Login;
+}

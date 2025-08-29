@@ -1,12 +1,11 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import React, { useState, useEffect } from 'react';
 import './global-theme.css';
-import Preview from "./Preview/Auth";
+import Login from "./Auth/Login";
 import BorrowerHome from "./Borrower/Home";
 import LibrarianHome from "./Librarian/LibrarianHome";
 import Book from "./Librarian/Dashboard/Book";
 import Borrower from "./Librarian/Dashboard/Borrower";
-import User from "./Librarian/Dashboard/User";
 import Record from "./Librarian/Dashboard/Record";
 import Profile from "./Librarian/Dashboard/Profile";
 import CategoryBooks from "./Borrower/Categories";
@@ -43,7 +42,7 @@ function App() {
       <BrowserRouter>
         <div className="flex-1">
           <Routes>
-            <Route path="/" element={<Preview />} />
+            <Route path="/" element={<Login />} />
             <Route
               path="/borrower"
               element={
