@@ -8,15 +8,15 @@ const roleAccess = require('../Middlewaeres/role');
 router.post('/', librarianController.createLibrarian);
 
 // Get all librarians
-router.get('/', roleAccess('librarian'), librarianController.getAllLibrarians);
+router.get('/', librarianController.getAllLibrarians);
 
 // Get a librarian by ID
-router.get('/:id', roleAccess('librarian'), librarianController.getLibrarianById);
+router.get('/:id', librarianController.getLibrarianById);
 
 // Update a librarian by ID
-router.put('/:id', roleAccess('librarian'), librarianController.updateLibrarianById);
+router.put('/:id', librarianController.updateLibrarianById);
 
 // Delete a librarian by ID
-router.delete('/:id', roleAccess('librarian'), librarianController.deleteLibrarianById);
+router.delete('/:id', librarianController.deleteLibrarianById);
 
 module.exports = router;

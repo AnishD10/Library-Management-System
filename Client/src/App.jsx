@@ -1,19 +1,18 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import React, { useState, useEffect } from 'react';
-import backgroundImage from './assets/images/background.jpg';
 import './global-theme.css';
-import Login from "./Auth/Login"; 
-import Preview from "./Preview/Preview";
-import BorrowerHome from "./Borrower/BorrowerHome";
+import Preview from "./Preview/Auth";
+import BorrowerHome from "./Borrower/Home";
 import LibrarianHome from "./Librarian/LibrarianHome";
 import Book from "./Librarian/Dashboard/Book";
 import Borrower from "./Librarian/Dashboard/Borrower";
 import User from "./Librarian/Dashboard/User";
 import Record from "./Librarian/Dashboard/Record";
-import CategoryBooks from "./pages/CategoryBooks";
-import ProfilePage from "./pages/ProfilePage";
+import Profile from "./Librarian/Dashboard/Profile";
+import CategoryBooks from "./Borrower/Categories";
+import ProfilePage from "./Borrower/Profile";
 import { jwtDecode } from "jwt-decode";
-import axios from "axios";
+
 
 function App() {
   const [addToReadList, setAddToReadList] = useState([]);
@@ -58,8 +57,8 @@ function App() {
             <Route path="/librarian" element={<LibrarianHome />}>
               <Route path="books" element={<Book />} />
               <Route path="borrowers" element={<Borrower />} />
-              <Route path="users" element={<User />} />
               <Route path="records" element={<Record />} />
+              <Route path="profile" element={<Profile />} />
             </Route>
             <Route
               path="/category/:category"

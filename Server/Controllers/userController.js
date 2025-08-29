@@ -45,7 +45,7 @@ const loginUser = asyncHandler(async (req, res) => {
   if (!isMatch) {
     return res.status(401).json({ message: 'Invalid credentials' });
   }
-  await user.populate('borrowerId'); // or 'borrowerId' if that's your field
+  await user.populate('borrowerId librarianId'); // or 'borrowerId' if that's your field
   const token = jwt.sign(
     {
       id: user._id,
@@ -53,7 +53,11 @@ const loginUser = asyncHandler(async (req, res) => {
       borrowerId: user.borrowerId?._id,
       borrowerName: user.borrowerId?.name,
       borrowerEmail: user.borrowerId?.email,
-      borrowedBooks: user.borrowerId?.booksBorrowed || []
+      borrowedBooks: user.borrowerId?.booksBorrowed || [] ,
+      librarianId: user.librarianId?._id,
+      librarianName: user.librarianId?.name,
+      librarianEmail: user.librarianId?.email,
+
     },
     process.env.JWT_SECRET,
     { expiresIn: '1h' }

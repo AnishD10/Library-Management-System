@@ -19,10 +19,10 @@ router.get('/', bookController.getAllBooks);
 router.get('/:id', bookController.getBookById);
 
 // Update a book by ID
-router.put('/:id', authorize, bookController.updateBookById);
+router.put('/:id', bookController.updateBookById);
 
 // Delete a book by ID
-router.delete('/:id', authorize, bookController.deleteBookById);
+router.delete('/:id', bookController.deleteBookById);
 
 // Upload endpoint
 router.post("/:id/upload-image", upload.single("image"), uploadController);

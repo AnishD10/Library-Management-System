@@ -6,13 +6,24 @@ const API_URL = "http://localhost:3000";
 export default function Record() {
   const [records, setRecords] = useState([]);
   const [search, setSearch] = useState("");
-  const [form, setForm] = useState({ bookId: "", borrowerId: "", status: "issue", _id: null });
+  const [form, setForm] = useState({
+    bookId: "",
+    borrowerId: "",
+    status: "issue",
+    _id: null,
+  });
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [books, setBooks] = useState([]);
+  const [borrowers, setBorrowers] = useState([]);
 
   useEffect(() => {
     fetchRecords();
+    fetchBooks();
+    fetchBorrowers();
+    // eslint-disable-next-line
   }, []);
 
   const fetchRecords = async () => {
@@ -21,15 +32,27 @@ export default function Record() {
       const res = await axios.get(`${API_URL}/api/records`, { params: { search } });
       setRecords(res.data);
       setError("");
-    } catch (err) {
+    } catch {
       setError("Failed to fetch records");
     }
     setLoading(false);
   };
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const fetchBooks = async () => {
+    try {
+      const res = await axios.get(`${API_URL}/api/books`);
+      setBooks(res.data);
+    } catch {}
   };
+
+  const fetchBorrowers = async () => {
+    try {
+      const res = await axios.get(`${API_URL}/api/borrowers`);
+      setBorrowers(res.data);
+    } catch {}
+  };
+
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,17 +65,24 @@ export default function Record() {
       }
       setForm({ bookId: "", borrowerId: "", status: "issue", _id: null });
       setEditing(false);
+      setShowModal(false);
       fetchRecords();
       setError("");
-    } catch (err) {
+    } catch {
       setError("Failed to save record");
     }
     setLoading(false);
   };
 
   const handleEdit = (record) => {
-    setForm(record);
+    setForm({
+      bookId: record.bookId?._id || record.bookId,
+      borrowerId: record.borrowerId?._id || record.borrowerId,
+      status: record.status,
+      _id: record._id,
+    });
     setEditing(true);
+    setShowModal(true);
   };
 
   const handleDelete = async (id) => {
@@ -62,20 +92,23 @@ export default function Record() {
       await axios.delete(`${API_URL}/api/records/${id}`);
       fetchRecords();
       setError("");
-    } catch (err) {
+    } catch {
       setError("Failed to delete record");
     }
     setLoading(false);
   };
 
-  const handleSearch = (e) => {
-    setSearch(e.target.value);
-  };
-
   useEffect(() => {
     const timeout = setTimeout(fetchRecords, 400);
     return () => clearTimeout(timeout);
+    // eslint-disable-next-line
   }, [search]);
+
+  const filteredRecords = records.filter(
+    (r) =>
+      (r.bookId?.title || "").toLowerCase().includes(search.toLowerCase()) ||
+      (r.borrowerId?.name || "").toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="p-4 text-gray-800 bg-gray-100 min-h-screen">
@@ -83,93 +116,116 @@ export default function Record() {
       <div className="mb-4 flex gap-2 items-center">
         <input
           type="text"
-          placeholder="Search records..."
+          placeholder="Search by book or borrower"
+          className="px-4 py-2 rounded bg-[#181818] text-white border border-gray-600 w-64"
           value={search}
-          onChange={handleSearch}
-          className="border px-2 py-1 rounded w-64"
+          onChange={(e) => setSearch(e.target.value)}
         />
+        <button
+          className="bg-blue-600 text-white px-4 py-2 rounded"
+          onClick={() => {
+            setForm({ bookId: "", borrowerId: "", status: "issue", _id: null });
+            setEditing(false);
+            setShowModal(true);
+          }}
+        >
+          Add Record
+        </button>
         {loading && <span className="text-xs text-gray-500">Loading...</span>}
         {error && <span className="text-xs text-red-500">{error}</span>}
       </div>
-      <form onSubmit={handleSubmit} className="mb-6 flex gap-2 flex-wrap items-end">
-        <input
-          name="bookId"
-          value={form.bookId}
-          onChange={handleChange}
-          placeholder="Book ID"
-          className="border px-2 py-1 rounded"
-          required
-        />
-        <input
-          name="borrowerId"
-          value={form.borrowerId}
-          onChange={handleChange}
-          placeholder="Borrower ID"
-          className="border px-2 py-1 rounded"
-          required
-        />
-        <select
-          name="status"
-          value={form.status}
-          onChange={handleChange}
-          className="border px-2 py-1 rounded"
-        >
-          <option value="issue">Issue</option>
-          <option value="return">Return</option>
-        </select>
-        <button type="submit" className="bg-blue-600 text-white px-4 py-1 rounded">
-          {editing ? "Update" : "Add"} Record
-        </button>
-        {editing && (
-          <button
-            type="button"
-            className="bg-gray-400 text-white px-3 py-1 rounded"
-            onClick={() => {
-              setForm({ bookId: "", borrowerId: "", status: "issue", _id: null });
-              setEditing(false);
-            }}
-          >
-            Cancel
-          </button>
-        )}
-      </form>
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+          <div className="bg-[#181818] rounded-lg shadow-lg p-8 w-full max-w-2xl relative pointer-events-auto">
+            <button
+              className="absolute top-2 right-4 text-2xl text-gray-400 hover:text-white"
+              onClick={() => setShowModal(false)}
+            >
+              &times;
+            </button>
+            <h2 className="text-xl font-bold mb-4 text-white">{editing ? "Edit Record" : "Add Record"}</h2>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              <select
+                name="bookId"
+                value={form.bookId}
+                onChange={handleChange}
+                className="border px-2 py-1 rounded bg-[#232323] text-white"
+                required
+              >
+                <option value="">Select Book</option>
+                {books.map((book) => (
+                  <option key={book._id} value={book._id}>
+                    {book.title}
+                  </option>
+                ))}
+              </select>
+              <select
+                name="borrowerId"
+                value={form.borrowerId}
+                onChange={handleChange}
+                className="border px-2 py-1 rounded bg-[#232323] text-white"
+                required
+              >
+                <option value="">Select Borrower</option>
+                {borrowers.map((b) => (
+                  <option key={b._id} value={b._id}>
+                    {b.name}
+                  </option>
+                ))}
+              </select>
+              <select
+                name="status"
+                value={form.status}
+                onChange={handleChange}
+                className="border px-2 py-1 rounded bg-[#232323] text-white"
+                required
+              >
+                <option value="issue">Issue</option>
+                <option value="return">Return</option>
+              </select>
+              <div className="flex gap-2">
+                <button type="submit" className="bg-blue-600 text-white px-4 py-1 rounded">
+                  {editing ? "Update" : "Add"} Record
+                </button>
+                <button
+                  type="button"
+                  className="bg-gray-400 text-white px-3 py-1 rounded"
+                  onClick={() => {
+                    setForm({ bookId: "", borrowerId: "", status: "issue", _id: null });
+                    setEditing(false);
+                    setShowModal(false);
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white rounded shadow">
           <thead>
             <tr>
-              <th className="py-2 px-4 border-b">Book ID</th>
-              <th className="py-2 px-4 border-b">Book Title</th>
-              <th className="py-2 px-4 border-b">Borrower ID</th>
-              <th className="py-2 px-4 border-b">Borrower Name</th>
-              <th className="py-2 px-4 border-b">Status</th>
-              <th className="py-2 px-4 border-b">Actions</th>
+              <th className="py-3 px-4 border-b text-center align-middle">Book Title</th>
+              <th className="py-3 px-4 border-b text-center align-middle">Borrower Name</th>
+              <th className="py-3 px-4 border-b text-center align-middle">Status</th>
+              <th className="py-3 px-4 border-b text-center align-middle">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {records.map((record) => (
+            {filteredRecords.map((record) => (
               <tr key={record._id}>
-                <td className="py-2 px-4 border-b">{
-                  record.bookId && typeof record.bookId === 'object'
-                    ? record.bookId._id || 'N/A'
-                    : record.bookId || 'N/A'
-                }</td>
-                <td className="py-2 px-4 border-b">{
-                  record.bookId && typeof record.bookId === 'object'
-                    ? record.bookId.title || 'N/A'
-                    : 'N/A'
-                }</td>
-                <td className="py-2 px-4 border-b">{
-                  record.borrowerId && typeof record.borrowerId === 'object'
-                    ? record.borrowerId._id || 'N/A'
-                    : record.borrowerId || 'N/A'
-                }</td>
-                <td className="py-2 px-4 border-b">{
-                  record.borrowerId && typeof record.borrowerId === 'object'
-                    ? record.borrowerId.name || 'N/A'
-                    : 'N/A'
-                }</td>
-                <td className="py-2 px-4 border-b">{record.status}</td>
-                <td className="py-2 px-4 border-b flex gap-2">
+                <td className="py-3 px-4 border-b text-center align-middle">
+                  {record.bookId?.title || "N/A"}
+                </td>
+                <td className="py-3 px-4 border-b text-center align-middle">
+                  {record.borrowerId?.name || "N/A"}
+                </td>
+                <td className="py-3 px-4 border-b text-center align-middle">
+                  {record.status}
+                </td>
+                <td className="py-3 px-4 border-b flex justify-center items-center gap-2 align-middle">
                   <button
                     className="bg-yellow-400 text-white px-3 py-1 rounded"
                     onClick={() => handleEdit(record)}

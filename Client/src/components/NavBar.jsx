@@ -165,7 +165,16 @@ function NavigationBar({ onBookIconClick, addToReadList = [], handleAddToRead, u
                     Profile
                   </button>
                   <button className="w-full text-left px-2 py-1 hover:bg-gray-100 rounded">Settings</button>
-                  <button className="w-full text-left px-2 py-1 hover:bg-gray-100 rounded">Logout</button>
+                  <button
+                    className="w-full text-left px-2 py-1 hover:bg-gray-100 rounded"
+                    onClick={() => {
+                      localStorage.removeItem("token");
+                      setShowProfileDropdown(false);
+                      navigate("/");
+                    }}
+                  >
+                    Logout
+                  </button>
                 </div>
               </div>
             )}

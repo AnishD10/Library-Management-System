@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import NavigationBar from "../components/NavBar";
+import NavigationBar from "../Components/NavBar";
 import HeroImage from "../assets/images/Hero.jpg";
 import Login from "../Auth/Login";
 import axios from "axios";

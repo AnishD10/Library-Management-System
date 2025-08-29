@@ -14,7 +14,7 @@ router.get('/', borrowerController.getAllBorrowers);
 router.get('/:id', borrowerController.getBorrowerById);
 
 // Update a borrower by ID
-router.put('/:id', roleAccess('librarian'), borrowerController.updateBorrowerById);
+router.put('/:id',  borrowerController.updateBorrowerById);
 
 // Delete a borrower by ID
 router.delete('/:id', borrowerController.deleteBorrowerById);
