@@ -1,16 +1,19 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faBook } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 
-function NavigationBar({ onBookIconClick, addToReadList, handleAddToRead }) {
+function NavigationBar({ onBookIconClick, addToReadList = [], handleAddToRead, user = {} }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [modalBook, setModalBook] = useState(null);
   const [showBookModal, setShowBookModal] = useState(false);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const dropdownRef = useRef(null);
+  const profileDropdownRef = useRef(null);
+  const navigate = useNavigate();
 
   // Fetch books from backend and filter by search term
   useEffect(() => {
@@ -37,6 +40,17 @@ function NavigationBar({ onBookIconClick, addToReadList, handleAddToRead }) {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowDropdown(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Hide profile dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target)) {
+        setShowProfileDropdown(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -112,27 +126,49 @@ function NavigationBar({ onBookIconClick, addToReadList, handleAddToRead }) {
               </span>
             )}
           </button>
-          {/* Dropdown */}
-          <div className="dropdown dropdown-end">
-            <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+          {/* Profile Avatar */}
+          <div className="relative">
+            <div
+              tabIndex={0}
+              role="button"
+              className="btn btn-ghost btn-circle avatar"
+              onClick={() => setShowProfileDropdown((v) => !v)}
+            >
               <div className="w-10 rounded-full">
                 <img
-                  alt="Tailwind CSS Navbar component"
-                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                  alt="User avatar"
+                  src={user.avatar || "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"}
+                />
               </div>
             </div>
-            <ul
-              tabIndex={0}
-              className="menu menu-sm dropdown-content bg-base-100 text-black rounded-box z-1 mt-3 w-52 p-2 shadow">
-              <li>
-                <a className="justify-between">
-                  Profile
-                  <span className="badge">New</span>
-                </a>
-              </li>
-              <li><a>Settings</a></li>
-              <li><a>Logout</a></li>
-            </ul>
+            {showProfileDropdown && (
+              <div
+                ref={profileDropdownRef}
+                className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg z-50 p-4 text-black"
+              >
+                <div className="flex flex-col items-center">
+                  <img
+                    src={user.avatar || "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"}
+                    alt="User avatar"
+                    className="w-16 h-16 rounded-full mb-2"
+                  />
+                  <div className="font-bold text-lg">{user.name || "User Name"}</div>
+                  <div className="text-gray-600 text-sm mb-2">{user.email || "user@email.com"}</div>
+                  <div className="w-full border-t border-gray-200 my-2"></div>
+                  <button
+                    className="w-full text-left px-2 py-1 hover:bg-gray-100 rounded"
+                    onClick={() => {
+                      setShowProfileDropdown(false);
+                      navigate("/profile");
+                    }}
+                  >
+                    Profile
+                  </button>
+                  <button className="w-full text-left px-2 py-1 hover:bg-gray-100 rounded">Settings</button>
+                  <button className="w-full text-left px-2 py-1 hover:bg-gray-100 rounded">Logout</button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -164,16 +200,6 @@ function NavigationBar({ onBookIconClick, addToReadList, handleAddToRead }) {
               </button>
             </div>
           </div>
-        </div>
-      )}
-      {/* Example dropdown for read list */}
-      {addToReadList.length > 0 && (
-        <div className="dropdown-content">
-          <ul>
-            {addToReadList.map(title => (
-              <li key={title}>{title}</li>
-            ))}
-          </ul>
         </div>
       )}
     </div>

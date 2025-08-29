@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import backgroundImage from './assets/images/background.jpg';
 import './global-theme.css';
 import Login from "./Auth/Login"; 
@@ -11,14 +11,33 @@ import Borrower from "./Librarian/Dashboard/Borrower";
 import User from "./Librarian/Dashboard/User";
 import Record from "./Librarian/Dashboard/Record";
 import CategoryBooks from "./pages/CategoryBooks";
-
-
+import ProfilePage from "./pages/ProfilePage";
+import { jwtDecode } from "jwt-decode";
+import axios from "axios";
 
 function App() {
   const [addToReadList, setAddToReadList] = useState([]);
+  const [user, setUser] = useState({});
+
   const handleAddToRead = (title) => {
     setAddToReadList(list => list.includes(title) ? list : [...list, title]);
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setUser({
+          name: decoded.borrowerName,
+          email: decoded.borrowerEmail,
+          id: decoded.borrowerId,
+        });
+      } catch (e) {
+        setUser({});
+      }
+    }
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -30,6 +49,7 @@ function App() {
               path="/borrower"
               element={
                 <BorrowerHome
+                  user={user}
                   addToReadList={addToReadList}
                   handleAddToRead={handleAddToRead}
                 />
@@ -49,6 +69,10 @@ function App() {
                   handleAddToRead={handleAddToRead}
                 />
               }
+            />
+            <Route
+              path="/profile"
+              element={<ProfilePage user={user} />}
             />
           </Routes>
         </div>

@@ -6,7 +6,7 @@ import { faCompass } from '@fortawesome/free-regular-svg-icons';
 import NavigationBar from '../components/NavBar';
 import SectionFooter from '../components/SectionFooter';
 
-function Home() {
+function Home({ user }) {
   // Manual next handler
     const handleNextQuote = () => {
       setFade(false);
@@ -222,6 +222,60 @@ function Home() {
   // State to control how many categories are shown
   const [visibleCategoryCount, setVisibleCategoryCount] = useState(3);
 
+  // State to track which books are borrowed by the user
+  const [borrowedStatus, setBorrowedStatus] = useState({});
+  const [borrowReturnMessage, setBorrowReturnMessage] = useState("");
+
+  // Fetch borrowed books for the user
+  useEffect(() => {
+    if (!user.id) return;
+    axios
+      .get(`http://localhost:3000/api/borrowers/${user.id}`)
+      .then((res) => {
+        // Use the borrowedBooks array from the borrower object
+        const borrowedBooks = res.data.borrowedBooks || [];
+        const statusMap = {};
+        borrowedBooks.forEach((bookId) => {
+          statusMap[bookId] = true;
+        });
+        setBorrowedStatus(statusMap);
+      })
+      .catch(() => setBorrowedStatus({}));
+  }, [user.id, books.length]);
+
+  // Handler for borrow/return
+  const handleBorrowOrReturn = async (book) => {
+    if (!user.id) return;
+    const bookId = book._id || book.id;
+    const isBorrowed = borrowedStatus[bookId];
+
+    try {
+      await axios.post("http://localhost:3000/api/records", {
+        bookId,
+        borrowerId: user.id,
+        status: isBorrowed ? "return" : "issue", // <-- "issue" for borrow, "return" for return
+      });
+      setBorrowedStatus((prev) => ({
+        ...prev,
+        [bookId]: !isBorrowed,
+      }));
+      setBorrowReturnMessage(
+        isBorrowed
+          ? `"${book.title}" returned successfully!`
+          : `"${book.title}" borrowed successfully!`
+      );
+      setTimeout(() => setBorrowReturnMessage(""), 2000);
+    } catch (err) {
+      alert("Failed to update borrow status.");
+    }
+  };
+
+  // Get an array of borrowed book IDs
+const borrowedBookIds = Object.keys(borrowedStatus).filter(id => borrowedStatus[id]);
+
+// Get the full book objects for borrowed books
+const borrowedBooks = books.filter(book => borrowedBookIds.includes(book._id || book.id));
+
   return (
     <>
       <div style={{ backgroundColor: 'black', minHeight: '100vh' }} className="no-scrollbar">
@@ -256,6 +310,8 @@ function Home() {
                   <ul className="w-full flex flex-col gap-4">
                     {addToReadList.map((title) => {
                       const book = books.find(b => b.title === title);
+                      const bookId = book?._id || book?.id;
+                      const isBorrowed = borrowedStatus[bookId];
                       return (
                         <li key={title} className="flex flex-col items-center bg-[#232323] rounded-lg p-2 shadow">
                           <img
@@ -274,9 +330,9 @@ function Home() {
                             </button>
                             <button
                               className="bg-gray-700 hover:bg-gray-600 text-white px-2 py-0.5 rounded shadow text-xs font-semibold"
-                              // Add your borrow logic here
+                              onClick={() => handleBorrowOrReturn(book)}
                             >
-                              Borrow
+                              {isBorrowed ? "Return" : "Borrow"}
                             </button>
                           </div>
                         </li>
@@ -290,6 +346,12 @@ function Home() {
             {addToReadMessage && (
               <div className="fixed top-6 right-1/2 translate-x-1/2 z-[100] bg-green-600 text-white px-6 py-2 rounded shadow-lg font-semibold transition-all duration-300">
                 {addToReadMessage}
+              </div>
+            )}
+            {/* Success message for Borrow/Return */}
+            {borrowReturnMessage && (
+              <div className="fixed top-20 right-1/2 translate-x-1/2 z-[100] bg-green-600 text-white px-6 py-2 rounded shadow-lg font-semibold transition-all duration-300">
+                {borrowReturnMessage}
               </div>
             )}
           </div>
@@ -353,6 +415,8 @@ function Home() {
                         quote.author?.includes(b.title)
                     );
                     if (!book) return <div className="text-white">Book details not found.</div>;
+                    const bookId = book._id || book.id;
+                    const isBorrowed = borrowedStatus[bookId];
                     return (
                       <>
                         <img src={book.coverImage} alt={book.title} className="w-40 h-60 object-cover rounded shadow mb-4" />
@@ -361,7 +425,12 @@ function Home() {
                         <div className="text-gray-400 text-center mb-4">{book.description}</div>
                         <div className="mb-4 text-gray-400">Quantity Available: <span className="text-white font-semibold">{book.quantity ?? 'N/A'}</span></div>
                         <div className="flex gap-3 justify-center w-full">
-                          <button className="bg-[#DC143C] hover:bg-[#a10e2a] text-white px-4 py-2 rounded shadow text-base font-semibold">Borrow Now</button>
+                          <button
+                            className="bg-[#DC143C] hover:bg-[#a10e2a] text-white px-4 py-2 rounded shadow text-base font-semibold"
+                            onClick={() => handleBorrowOrReturn(book)}
+                          >
+                            {isBorrowed ? "Return" : "Borrow Now"}
+                          </button>
                           <button
                             className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded shadow text-base font-semibold"
                             onClick={() => {
@@ -407,28 +476,37 @@ function Home() {
                 <div className="relative">
                   <div className="overflow-visible w-full flex justify-center scroll-smooth no-scrollbar">
                     <div className="flex flex-row gap-8 min-w-[1200px] justify-center items-center mx-auto">
-                      {category.books.map((book) => (
-                        <div
-                          key={book.title}
-                          className="flex flex-col items-center w-60 bg-[#232323] rounded-xl shadow-lg p-4 transition-all duration-500 ease-in-out hover:scale-105 hover:shadow-2xl hover:ring-2 hover:ring-[#DC143C]/60"
-                          style={{ zIndex: 10 }}
-                        >
-                          <img src={book.coverImage} alt={book.title} className="w-40 h-60 object-cover rounded shadow mb-4 cursor-pointer" onClick={() => openModal(book.title)} />
-                          <div className="text-center mb-2">
-                            <div className="text-lg font-bold text-white">{book.title}</div>
-                            <div className="text-gray-300 text-base">{book.author}</div>
+                      {category.books.map((book) => {
+                        const bookId = book._id || book.id;
+                        const isBorrowed = borrowedStatus[bookId];
+                        return (
+                          <div
+                            key={book.title}
+                            className="flex flex-col items-center w-60 bg-[#232323] rounded-xl shadow-lg p-4 transition-all duration-500 ease-in-out hover:scale-105 hover:shadow-2xl hover:ring-2 hover:ring-[#DC143C]/60"
+                            style={{ zIndex: 10 }}
+                          >
+                            <img src={book.coverImage} alt={book.title} className="w-40 h-60 object-cover rounded shadow mb-4 cursor-pointer" onClick={() => openModal(book.title)} />
+                            <div className="text-center mb-2">
+                              <div className="text-lg font-bold text-white">{book.title}</div>
+                              <div className="text-gray-300 text-base">{book.author}</div>
+                            </div>
+                            <div className="flex gap-2 justify-center">
+                              <button
+                                className="bg-[#DC143C] hover:bg-[#a10e2a] text-white px-3 py-1 rounded shadow text-sm font-semibold"
+                                onClick={() => handleAddToRead(book.title)}
+                              >
+                                Add to Read
+                              </button>
+                              <button
+                                className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded shadow text-sm font-semibold"
+                                onClick={() => handleBorrowOrReturn(book)}
+                              >
+                                {isBorrowed ? "Return" : "Borrow"}
+                              </button>
+                            </div>
                           </div>
-                          <div className="flex gap-2 justify-center">
-                            <button
-                              className="bg-[#DC143C] hover:bg-[#a10e2a] text-white px-3 py-1 rounded shadow text-sm font-semibold"
-                              onClick={() => handleAddToRead(book.title)}
-                            >
-                              Add to Read
-                            </button>
-                            <button className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded shadow text-sm font-semibold">Borrow</button>
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                       {/* More button at the end */}
                       <button
                         className="ml-4 bg-[#DC143C] hover:bg-[#a10e2a] text-white px-4 py-2 rounded shadow font-semibold z-20 self-center"
@@ -463,6 +541,29 @@ function Home() {
             )}
           </div>
         </section>
+        {/* Borrowed Books Section */}
+        <div className="max-w-xl mx-auto mt-8 mb-8 bg-[#181818] rounded-xl shadow-2xl p-6">
+          <h2 className="text-xl font-bold text-white mb-4">Borrowed Books</h2>
+          {borrowedBooks.length === 0 ? (
+            <div className="text-gray-400 text-center">No borrowed books.</div>
+          ) : (
+            <ul className="flex flex-col gap-4">
+              {borrowedBooks.map(book => (
+                <li key={book._id || book.id} className="flex items-center gap-4 bg-[#232323] rounded-lg p-2 shadow">
+                  <img
+                    src={book.coverImage}
+                    alt={book.title}
+                    className="w-12 h-16 object-cover rounded shadow"
+                  />
+                  <div>
+                    <div className="text-base font-bold text-white">{book.title}</div>
+                    <div className="text-gray-300 text-sm">{book.author}</div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
       <SectionFooter />
     </>

@@ -52,6 +52,7 @@ const loginUser = asyncHandler(async (req, res) => {
       role: user.role,
       borrowerId: user.borrowerId?._id,
       borrowerName: user.borrowerId?.name,
+      borrowerEmail: user.borrowerId?.email,
       borrowedBooks: user.borrowerId?.booksBorrowed || []
     },
     process.env.JWT_SECRET,

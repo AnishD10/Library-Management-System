@@ -15,7 +15,7 @@ const categoryNames = {
   science: "Science",
 };
 
-function CategoryBooks({ addToReadList = [], handleAddToRead = () => {} }) {
+function CategoryBooks({ addToReadList = [], handleAddToRead = () => {}, borrowedList = [], handleBorrow = () => {}, handleReturn = () => {} }) {
   const { category } = useParams();
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -54,35 +54,52 @@ function CategoryBooks({ addToReadList = [], handleAddToRead = () => {} }) {
           <div className="text-gray-400 text-center mt-16">No books found for this category.</div>
         ) : (
           <div className="flex flex-wrap gap-8 justify-start">
-            {books.map((book) => (
-              <div
-                key={book._id || book.title}
-                className="flex flex-col items-center w-60 bg-[#232323] rounded-xl shadow-lg p-4 transition-all duration-500 ease-in-out hover:scale-105 hover:shadow-2xl hover:ring-2 hover:ring-[#DC143C]/60"
-                style={{ zIndex: 10 }}
-              >
-                <img
-                  src={book.coverImage}
-                  alt={book.title}
-                  className="w-40 h-60 object-cover rounded shadow mb-4 cursor-pointer"
-                />
-                <div className="text-center mb-2">
-                  <div className="text-lg font-bold text-white">{book.title}</div>
-                  <div className="text-gray-300 text-base">{book.author}</div>
+            {books.map((book) => {
+              const bookId = book.id || book._id; // Make sure this matches your data!
+              const isBorrowed = borrowedList.includes(bookId);
+
+              return (
+                <div
+                  key={bookId}
+                  className="flex flex-col items-center w-60 bg-[#232323] rounded-xl shadow-lg p-4 transition-all duration-500 ease-in-out hover:scale-105 hover:shadow-2xl hover:ring-2 hover:ring-[#DC143C]/60"
+                  style={{ zIndex: 10 }}
+                >
+                  <img
+                    src={book.coverImage}
+                    alt={book.title}
+                    className="w-40 h-60 object-cover rounded shadow mb-4 cursor-pointer"
+                  />
+                  <div className="text-center mb-2">
+                    <div className="text-lg font-bold text-white">{book.title}</div>
+                    <div className="text-gray-300 text-base">{book.author}</div>
+                  </div>
+                  <div className="flex gap-2 justify-center">
+                    <button
+                      className="bg-[#DC143C] hover:bg-[#a10e2a] text-white px-3 py-1 rounded shadow text-sm font-semibold"
+                      onClick={() => handleAddToRead(book.title)}
+                      disabled={addToReadList.includes(book.title)}
+                    >
+                      {addToReadList.includes(book.title) ? "Added" : "Add to Read"}
+                    </button>
+                    {!isBorrowed ? (
+                      <button
+                        className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded shadow text-sm font-semibold"
+                        onClick={() => handleBorrow(book)}
+                      >
+                        Borrow
+                      </button>
+                    ) : (
+                      <button
+                        className="bg-green-700 hover:bg-green-600 text-white px-3 py-1 rounded shadow text-sm font-semibold"
+                        onClick={() => handleReturn(book)}
+                      >
+                        Return
+                      </button>
+                    )}
+                  </div>
                 </div>
-                <div className="flex gap-2 justify-center">
-                  <button
-                    className="bg-[#DC143C] hover:bg-[#a10e2a] text-white px-3 py-1 rounded shadow text-sm font-semibold"
-                    onClick={() => handleAddToRead(book.title)}
-                    disabled={addToReadList.includes(book.title)}
-                  >
-                    {addToReadList.includes(book.title) ? "Added" : "Add to Read"}
-                  </button>
-                  <button className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded shadow text-sm font-semibold">
-                    Borrow
-                  </button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

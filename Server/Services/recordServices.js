@@ -9,9 +9,7 @@ const createRecordService = async (recordData) => {
       throw new Error('Book not found');
     }
 
-    if (book.available < 1) {
-      throw new Error(`Sorry ! ${book.title} is out of stock `);
-    }
+   
     
     const borrower = await Borrower.findById(recordData.borrowerId);
     if (!borrower) {
@@ -22,6 +20,10 @@ const createRecordService = async (recordData) => {
       if (borrower.booksBorrowed.includes(recordData.bookId)) {
         throw new Error('Book already borrowed by this borrower');
       }
+      
+       if (book.available <= 0 ) {
+      throw new Error(`Sorry ! ${book.title} is out of stock `);
+    }
       
       borrower.booksBorrowed.push(recordData.bookId);
       await borrower.save(); // Save the evidence of their literary addiction
