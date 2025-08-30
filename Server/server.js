@@ -28,7 +28,6 @@ app.use(cors({
   credentials: true,
 }));
 
-app.options('*', cors()); // <-- Add this line to handle preflight requests
 
 // Parse JSON bodies
 app.use(express.json());
@@ -44,12 +43,18 @@ mongoose.connect(process.env.MONGO_URI)
 // Serve uploaded book images
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Import and use API routes
+// Import and use API routes with debug logging
 const librarianRoute = require('./Routes/librarianRoutes');
 const borrowerRoute = require('./Routes/burrowerRoutes');
 const bookRoute = require('./Routes/bookRoutes');
 const userRoute = require('./Routes/userRoutes');
 const recordRoute = require('./Routes/recordRoutes');
+
+console.log('librarianRoute:', typeof librarianRoute);
+console.log('borrowerRoute:', typeof borrowerRoute);
+console.log('bookRoute:', typeof bookRoute);
+console.log('userRoute:', typeof userRoute);
+console.log('recordRoute:', typeof recordRoute);
 
 app.use('/api/librarians', librarianRoute);
 app.use('/api/borrowers', borrowerRoute);
@@ -57,10 +62,6 @@ app.use('/api/books', bookRoute);
 app.use('/api/users', userRoute);
 app.use('/api/records', recordRoute);
 
-// Health check endpoint (because even servers need a checkup)
-app.get('/', (req, res) => {
-  res.status(200).json({ message: 'Library Management System API is running' });
-});
 
 // Global error handler (for when things go sideways)
 app.use((err, req, res, next) => {
