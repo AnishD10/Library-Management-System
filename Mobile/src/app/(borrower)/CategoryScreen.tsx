@@ -39,7 +39,7 @@ export default function CategoriesScreen() {
 
   // Fetch all books and categories
   useEffect(() => {
-    axios.get("http://192.168.18.199:3000/api/books")
+    axios.get("https://library-management-system-ylrf.onrender.com/api/books")
       .then(res => {
         const data = res.data as { category?: string }[];
         const cats = Array.from(
@@ -58,7 +58,7 @@ export default function CategoriesScreen() {
   useEffect(() => {
     if (!userId) return;
     axios
-      .get(`http://192.168.18.199:3000/api/borrowers/${userId}`)
+      .get(`https://library-management-system-ylrf.onrender.com/api/borrowers/${userId}`)
       .then((res) => {
         const data = res.data as { borrowedBooks?: string[] };
         const borrowedBooks = data.borrowedBooks || [];
@@ -80,7 +80,7 @@ export default function CategoriesScreen() {
     const bookId = book._id || book.id;
     const isBorrowed = borrowedStatus[bookId];
     try {
-      await axios.post(`http://192.168.18.199:3000/api/records`, {
+      await axios.post(`https://library-management-system-ylrf.onrender.com/api/records`, {
         bookId,
         borrowerId: userId,
         status: isBorrowed ? "return" : "issue",

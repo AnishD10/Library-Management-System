@@ -15,7 +15,7 @@ export default function RegisterScreen() {
 
   const handleRegister = async () => {
     try {
-      await axios.post("http://192.168.18.199:3000/api/borrowers", form);
+      await axios.post("https://library-management-system-ylrf.onrender.com/api/borrowers", form);
       setMessage("Your login credentials are sent to your email.");
       setTimeout(() => navigation.navigate("Login"), 1500);
     } catch (err) {

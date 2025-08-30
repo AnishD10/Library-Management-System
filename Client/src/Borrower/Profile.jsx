@@ -9,6 +9,8 @@ function ProfilePage({ user = {} }) {
   const [error, setError] = useState("");
   const [returnMessage, setReturnMessage] = useState("");
 
+
+
   useEffect(() => {
     if (user.id) {
       fetchBorrowedBookIds();

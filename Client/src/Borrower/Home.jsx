@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCompass } from '@fortawesome/free-regular-svg-icons';
-import NavigationBar from '../Components/NavBar';
+import NavigationBar from '../Components/NavBar'
 import SectionFooter from '../Components/Footer';
 
 function Home({ user }) {

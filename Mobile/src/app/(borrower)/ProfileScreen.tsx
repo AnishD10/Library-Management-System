@@ -43,14 +43,14 @@ export default function ProfileScreen() {
 
   // Fetch all books for mapping IDs to titles/authors/covers
   useEffect(() => {
-    axios.get("http://192.168.18.199:3000/api/books").then(res => {
+    axios.get("https://library-management-system-ylrf.onrender.com/api/books").then(res => {
       setAllBooks(res.data as any[]);
     });
   }, []);
 
   useEffect(() => {
     if (user._id) {
-      axios.get(`http://192.168.18.199:3000/api/borrowers/${user._id}`).then(res => {
+      axios.get(`https://library-management-system-ylrf.onrender.com/api/borrowers/${user._id}`).then(res => {
         const data = res.data as { booksBorrowed?: string[]; fine?: number };
         setBorrowedBooks(data.booksBorrowed || []);
         setFine(data.fine || 0);
@@ -82,7 +82,7 @@ export default function ProfileScreen() {
     const bookId = book._id || book.id;
     const isBorrowed = borrowedStatus[bookId];
     try {
-      await axios.post(`http://192.168.18.199:3000/api/records`, {
+      await axios.post(`https://library-management-system-ylrf.onrender.com/api/records`, {
         bookId,
         borrowerId: user._id,
         status: isBorrowed ? "return" : "issue",

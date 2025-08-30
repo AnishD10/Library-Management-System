@@ -34,6 +34,7 @@ export default function Auth() {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    console.log(registerForm);1
     setMessage('');
     setSuccess(false);
     try {

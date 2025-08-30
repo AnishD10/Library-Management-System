@@ -5,7 +5,7 @@ import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { jwtDecode } from "jwt-decode";
 
-const SERVER = "http://192.168.18.199:3000";
+const SERVER = "https://library-management-system-ylrf.onrender.com";
 const { width } = Dimensions.get("window");
 const CARD_WIDTH = Math.max(120, Math.min(160, width * 0.42));
 const COVER_WIDTH = CARD_WIDTH * 0.7;

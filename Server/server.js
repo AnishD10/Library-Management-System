@@ -1,4 +1,3 @@
-
 // Load environment variables and core modules
 require('dotenv').config();
 const express = require('express');
@@ -8,9 +7,20 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Whitelist of allowed origins for CORS
+const allowedOrigins = ["*"]
+
 // Enable CORS for frontend requests
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true); // allow non-browser requests
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
 }));
 
 // Parse JSON bodies
