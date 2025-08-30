@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const API_URL = "https://library-management-system-ylrf.onrender.com";
 
@@ -9,8 +10,12 @@ export default function Auth() {
   const [message, setMessage] = useState('');
   const [isRegister, setIsRegister] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [info, setInfo] = useState(''); // <-- Add info state
+  const [info, setInfo] = useState('');
+  const [showForgot, setShowForgot] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotMsg, setForgotMsg] = useState('');
   const containerRef = useRef();
+  const navigate = useNavigate();
 
   const handleLoginChange = (e) => setLoginForm({ ...loginForm, [e.target.name]: e.target.value });
   const handleRegisterChange = (e) => setRegisterForm({ ...registerForm, [e.target.name]: e.target.value });
@@ -25,7 +30,7 @@ export default function Auth() {
       setSuccess(true);
       setMessage("Login successful!");
       setTimeout(() => {
-        window.location.href = res.data.role === "librarian" ? "/librarian" : "/borrower";
+        navigate(res.data.role === "librarian" ? "/librarian" : "/borrower");
       }, 1200);
     } catch (err) {
       setMessage(err.response?.data?.message || "Login failed");
@@ -34,17 +39,27 @@ export default function Auth() {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    console.log(registerForm);1
     setMessage('');
     setSuccess(false);
     try {
       await axios.post(`${API_URL}/api/borrowers`, registerForm);
       setSuccess(true);
       setInfo("Your login credentials are sent to your email.");
-      setIsRegister(false); // Switch to login form
+      setIsRegister(false);
       setMessage('');
     } catch (err) {
       setMessage(err.response?.data?.message || "Registration failed");
+    }
+  };
+
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    setForgotMsg('');
+    try {
+      await axios.post(`${API_URL}/api/users/forgotPassword`, { email: forgotEmail });
+      setForgotMsg('Password reset instructions sent to your email.');
+    } catch (err) {
+      setForgotMsg(err.response?.data?.message || 'Failed to send reset instructions.');
     }
   };
 
@@ -138,6 +153,14 @@ export default function Auth() {
               Login
             </button>
             <p className="text-gray-400 text-sm text-center">
+              <span
+                className="text-[#DC143C] cursor-pointer"
+                onClick={() => setShowForgot(true)}
+              >
+                Forgot Password?
+              </span>
+            </p>
+            <p className="text-gray-400 text-sm text-center">
               Don't have an account?{" "}
               <span
                 className="text-[#DC143C] cursor-pointer"
@@ -153,6 +176,28 @@ export default function Auth() {
               <p className={`text-center ${success ? "text-green-400" : "text-red-400"}`}>{message}</p>
             )}
           </form>
+          {showForgot && (
+            <form onSubmit={handleForgotPassword} className="flex flex-col gap-4 mt-4">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                value={forgotEmail}
+                onChange={e => setForgotEmail(e.target.value)}
+                className="px-4 py-2 rounded bg-[#232323] text-white border border-gray-600"
+                required
+              />
+              <button
+                type="submit"
+                className="bg-[#DC143C] hover:bg-[#a10e2a] text-white font-semibold py-2 rounded"
+              >
+                Send Reset Link
+              </button>
+              {forgotMsg && <p className="text-center text-green-400">{forgotMsg}</p>}
+              <span className="text-gray-400 text-sm text-center cursor-pointer" onClick={() => setShowForgot(false)}>
+                Back to Login
+              </span>
+            </form>
+          )}
         </div>
       </div>
     </div>
