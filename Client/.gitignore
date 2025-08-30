@@ -9,8 +9,7 @@ lerna-debug.log*
 
 node_modules
 public
-package-lock.json
-package.json
+package-lock.jsonq
 eslint.config.js
 index.html
 readme.md
