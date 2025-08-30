@@ -13,13 +13,19 @@ const COVER_HEIGHT = CARD_WIDTH * 1.05;
 
 type DecodedToken = {
   id?: string;
-  name?: string;
-  email?: string;
+  role?: string;
+  borrowerId?: string;
+  borrowerName?: string;
+  borrowerEmail?: string;
+  borrowedBooks?: string[];
+  librarianId?: string;
+  librarianName?: string;
+  librarianEmail?: string;
 };
 
 export default function HomeScreen() {
   const router = useRouter();
-  const [user, setUser] = useState<{ name?: string; id?: string }>({ name: "User", id: "" });
+  const [user, setUser] = useState<{ name?: string; id?: string; email?: string }>({ name: "User", id: "", email: "" });
   const [books, setBooks] = useState<any[]>([]);
   const [quotes, setQuotes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,9 +45,14 @@ export default function HomeScreen() {
       if (token) {
         try {
           const decoded = jwtDecode<DecodedToken>(token);
-          setUser({ name: decoded.name, id: decoded.id });
+          setUser({
+            name: decoded.borrowerName,
+            id: decoded.borrowerId,
+            email: decoded.borrowerEmail
+            
+          });
         } catch (e) {
-          setUser({ name: "User", id: "" });
+          setUser({ name: "User", id: "" ,email: ""});
         }
       }
     })();
