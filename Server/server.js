@@ -11,7 +11,8 @@ const PORT = process.env.PORT || 3000;
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
-  "https://library-management-system-ylrf.onrender.com", // add your deployed frontend URL here
+  "https://library-management-system-ylrf.onrender.com",
+  "https://68b2fab5d2318479b1e5387d--librarymanagementsystem10.netlify.app/", // <-- Add your Netlify URL here
 ];
 
 // Enable CORS for frontend requests
@@ -26,6 +27,8 @@ app.use(cors({
   },
   credentials: true,
 }));
+
+app.options('*', cors()); // <-- Add this line to handle preflight requests
 
 // Parse JSON bodies
 app.use(express.json());
