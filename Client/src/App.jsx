@@ -55,7 +55,7 @@ function App() {
             />
             <Route path="/librarian" element={<LibrarianHome />}>
               <Route path="books" element={<Book />} />
-              <Route path="borrowers" element={<Borrower />} />
+              <Route path="borrower" element={<Borrower />} />
               <Route path="records" element={<Record />} />
               <Route path="profile" element={<Profile />} />
             </Route>
