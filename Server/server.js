@@ -8,7 +8,11 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Whitelist of allowed origins for CORS
-const allowedOrigins = ["*"]
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "https://library-management-system-ylrf.onrender.com", // add your deployed frontend URL here
+];
 
 // Enable CORS for frontend requests
 app.use(cors({
