@@ -14,7 +14,7 @@ const LibrarianHome = () => {
             const token = localStorage.getItem("token");
             if (!token) return;
             try {
-                const res = await fetch("http://localhost:3000/api/users/profile", {
+                const res = await fetch("https://library-management-system-ylrf.onrender.com/api/users/profile", {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 const data = await res.json();

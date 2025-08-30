@@ -150,9 +150,9 @@ function Home({ user }) {
   useEffect(() => {
     setLoading(true);
     // Fetch books
-    const booksPromise = axios.get('http://localhost:3000/api/books');
+    const booksPromise = axios.get('https://library-management-system-ylrf.onrender.com/api/books');
     // Fetch quotes (new endpoint)
-    const quotesPromise = axios.get('http://localhost:3000/api/books').catch(() => ({ data: [] }));
+    const quotesPromise = axios.get('https://library-management-system-ylrf.onrender.com/api/books').catch(() => ({ data: [] }));
 
     Promise.all([booksPromise, quotesPromise])
       .then(([booksRes, quotesRes]) => {
@@ -230,7 +230,7 @@ function Home({ user }) {
   useEffect(() => {
     if (!user.id) return;
     axios
-      .get(`http://localhost:3000/api/borrowers/${user.id}`)
+      .get(`https://library-management-system-ylrf.onrender.com/api/borrowers/${user.id}`)
       .then((res) => {
         // Use the borrowedBooks array from the borrower object
         const borrowedBooks = res.data.borrowedBooks || [];
@@ -250,7 +250,7 @@ function Home({ user }) {
     const isBorrowed = borrowedStatus[bookId];
 
     try {
-      await axios.post("http://localhost:3000/api/records", {
+      await axios.post("https://library-management-system-ylrf.onrender.com/api/records", {
         bookId,
         borrowerId: user.id,
         status: isBorrowed ? "return" : "issue", // <-- "issue" for borrow, "return" for return

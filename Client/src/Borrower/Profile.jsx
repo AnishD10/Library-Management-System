@@ -20,7 +20,7 @@ function ProfilePage({ user = {} }) {
   // Fetch all books from backend
   const fetchAllBooks = () => {
     axios
-      .get("http://localhost:3000/api/books")
+      .get("https://library-management-system-ylrf.onrender.com/api/books")
       .then(res => setBooks(res.data))
       .catch(() => setBooks([]));
   };
@@ -28,7 +28,7 @@ function ProfilePage({ user = {} }) {
   // Fetch borrowed book IDs
   const fetchBorrowedBookIds = () => {
     axios
-      .get(`http://localhost:3000/api/borrowers/${user.id}`)
+      .get(`https://library-management-system-ylrf.onrender.com/api/borrowers/${user.id}`)
       .then(res => {
         setBorrowedBookIds(res.data.booksBorrowed || []);
         setFine(res.data.fine || 0);
@@ -51,7 +51,7 @@ function ProfilePage({ user = {} }) {
 
   const handleReturn = async (book) => {
     try {
-      await axios.post("http://localhost:3000/api/records", {
+      await axios.post("https://library-management-system-ylrf.onrender.com/api/records", {
         bookId: book._id || book.id,
         borrowerId: user.id,
         status: "return",

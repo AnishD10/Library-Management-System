@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-const API_URL = "http://localhost:3000";
+const API_URL = "https://library-management-system-ylrf.onrender.com";
 
 export default function User() {
   const [users, setUsers] = useState([]);

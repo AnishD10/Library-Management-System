@@ -13,10 +13,10 @@ const Home = () => {
     const fetchStats = async () => {
       try {
         const [booksRes, borrowersRes, librariansRes, recordsRes] = await Promise.all([
-          fetch("http://localhost:3000/api/books").then(res => res.json()),
-          fetch("http://localhost:3000/api/borrowers").then(res => res.json()),
-          fetch("http://localhost:3000/api/users?role=librarian").then(res => res.json()),
-          fetch("http://localhost:3000/api/records").then(res => res.json()),
+          fetch("https://library-management-system-ylrf.onrender.com/api/books").then(res => res.json()),
+          fetch("https://library-management-system-ylrf.onrender.com/api/borrowers").then(res => res.json()),
+          fetch("https://library-management-system-ylrf.onrender.com/api/users?role=librarian").then(res => res.json()),
+          fetch("https://library-management-system-ylrf.onrender.com/api/records").then(res => res.json()),
         ]);
         const totalBooks = booksRes.length;
         const totalBorrowers = borrowersRes.length;

@@ -22,7 +22,7 @@ function NavigationBar({ onBookIconClick, addToReadList = [], handleAddToRead, u
       setShowDropdown(false);
       return;
     }
-    axios.get("http://localhost:3000/api/books")
+    axios.get("https://library-management-system-ylrf.onrender.com/api/books")
       .then(res => {
         const lower = searchTerm.toLowerCase();
         const filtered = (res.data || []).filter(

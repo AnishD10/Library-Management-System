@@ -22,7 +22,7 @@ function CategoryBooks({ addToReadList = [], handleAddToRead = () => {}, borrowe
 
   useEffect(() => {
     setLoading(true);
-    axios.get('http://localhost:3000/api/books')
+    axios.get('https://library-management-system-ylrf.onrender.com/api/books')
       .then(res => {
         // Filter books by category (case-insensitive)
         setBooks(

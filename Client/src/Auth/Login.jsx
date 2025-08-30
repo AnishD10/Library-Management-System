@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import axios from 'axios';
 
-const API_URL = "http://localhost:3000";
+const API_URL = "https://library-management-system-ylrf.onrender.com";
 
 export default function Auth() {
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
